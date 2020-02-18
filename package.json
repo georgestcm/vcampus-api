@@ -1,0 +1,19 @@
+{
+  "name": "vcampus-api",
+  "version": "1.0.0",
+  "description": "api for vcampus",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.7",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.8.7",
+    "underscore": "^1.9.2"
+  }
+}
