@@ -71,12 +71,12 @@ school:{
     _id:{
       type:String,
       default:null
-    },
-    first_name:{
-      type:String,
-      default:null
-    },
-    last_name:{
+    }
+  }]
+},
+teacher:{
+  schools:[{
+    _id:{
       type:String,
       default:null
     }

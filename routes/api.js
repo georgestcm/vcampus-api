@@ -185,6 +185,7 @@ router.post('/login',(req,res)=>{
 
 router.post('/save_school_data',(req,res)=>{
  let schoolData = req.body;
+
  User.update({_id:schoolData.school_id},{
    $set:{
      school: {
@@ -200,11 +201,79 @@ router.post('/save_school_data',(req,res)=>{
    if(err){
      res.status(401).send(err)
    } else {
-     res.status(200).send(result)
+     bcrypt.genSalt(saltRounds, function(err, salt) {
+          bcrypt.hash(schoolData.password, salt, function(err, hash) {
+            schoolData.password = hash;
+            User.update({_id:schoolData.school_id},{
+              $set:{
+                password:hash
+              }
+            },function(err,result){
+              if(err){
+                console.log(err)
+              } else {
+                res.status(200).send(result)
+              }
+            })
+          });
+
+      })
+
    }
 
  })
 
+})
+
+router.post('/create_new_teacher',(req,res)=>{
+  let dataTeacher = req.body;
+  let currentSchoolId= req.query.school_id;
+  User.findOne({username:dataTeacher.username},function(err,teacher){
+    if(err){
+      console.log(err)
+    } else {
+      if(teacher){
+        res.status(404).send({msg:"Username already in use"})
+      } else {
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+             bcrypt.hash(dataTeacher.password, salt, function(err, hash) {
+               dataTeacher.password = hash;
+               let user = new User(dataTeacher)
+               user.save((error,registerTeacher)=>{
+                 if(err){
+                   console.log(err)
+                 } else {
+                   User.update({_id:currentSchoolId},{
+                     $push:{
+                       "school.teacher": {
+                           _id: registerTeacher._id
+                       }
+                     }
+                   },function(err,data){
+                     if(err){
+                       console.log(err)
+                     } else {
+                       User.update({_id:registerTeacher._id},{
+                         $push:{
+                           "teacher.schools": {
+                               _id: currentSchoolId
+                           }
+                         }
+                       },function(err,data){
+                         if(err)
+                            console.log(err)
+                            else
+                            res.status(200).send({msg:'New teacher has been added'})
+                       })
+                     }
+                   })
+                 }
+               })
+             });
+         })
+      }
+    }
+  })
 })
 
 
