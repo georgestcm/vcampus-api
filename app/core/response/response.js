@@ -1,0 +1,24 @@
+export default class CommonMessage {
+     _DefaultErrorMessage = "An error occurred while processing your request.";
+     _EmailOrPhoneNoExist = "Email or PhoneNo already exist!";
+     _SignupMsg = "Thanks for signing up. Please check your email for verification link and login credentials.";
+     _RegisteredEmail = "Please enter registered email";
+     _SuccessMsg = "Saved successfully.";
+     _SuccessUpdateMsg = "Updated successfully.";
+     _SuccessDeleteMsg = "Deleted successfully.";
+     _DefaultSuccessMsg = "Success!";
+     _DataSuccessMsg = "Data saved successfully.";
+     _SomethingWentWrong = "Something went wrong. Please refresh the page or try again later.";
+     _CodeSent = "Verification code has been sent to {0}.";
+     _InvalidVerificationCode = "Verification code does not match.";
+     _UnAuthorizedUser = "Request not authorized. Please reload the page or login again.";
+     _PasswordUpdated = "Password has been updated successfully.";
+     _InvalidPassword = "New password does not follow the rule.";
+     _InvalidRequest = "Invalid request";
+     _SuccessEmailVerified = "Congratulations! You have successfully verified [email]. Please login with provided credentials in email.";
+     _SuccessEmailAlreadyVerified = "Email has already verified.";
+     _VerificationCodeInvalid = "Either verification code has expired or invalid.";
+     _EmailAuthorizedSuccessMsg = "Account authorized successfully.";
+     _InvalidLoginRequest = "Invalid login request.";
+     _AccountChange = "Please wait while we are authenticating {0}'s Account.";
+};
