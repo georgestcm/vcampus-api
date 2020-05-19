@@ -14,7 +14,15 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.8.7",
+    "mongoose": "^5.9.14",
     "underscore": "^1.9.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/georgestcm/vcampus-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/georgestcm/vcampus-api/issues"
+  },
+  "homepage": "https://github.com/georgestcm/vcampus-api#readme"
 }
