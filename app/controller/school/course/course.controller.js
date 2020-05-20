@@ -2,8 +2,8 @@ const express = require('express')
 const under = require("underscore")
 const router = express.Router();
 const mongoose = require('mongoose')
-
-const Course = require('D:/VCampus-BackendApi/vcampus-api/app/models/school/course/course.model');
+const jwt = require('jsonwebtoken')
+const Course = require('D:/VCampus/vcampus-api/app/models/school/course/course.model');
 
 // Create and Save a new course
 exports.saveCourse = (req, res) => {   
@@ -16,7 +16,11 @@ exports.saveCourse = (req, res) => {
     // Save course in the database
     course.save()
     .then(data => {
-        res.send(data);
+        var payload = { _id: data.course_id };
+      var token = jwt.sign(payload, "HS256", {
+        expiresIn: "1d"
+      });
+        res.send(data,token);
     }).catch(err => {
         res.status(500).send({
             message: err.message || "Some error occurred while creating the course."

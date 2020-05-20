@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const mongoose = require('mongoose')
-const Curriculum = require('D:/VCampus-BackendApi/vcampus-api/app/models/user')
+const Curriculum = require('D:/VCampus/vcampus-api/app/models/user')
 
 
 exports.saveCurriculum = (req,res)=>{

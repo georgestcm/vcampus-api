@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router();
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
-const User = require('D:/VCampus-BackendApi/vcampus-api/app/models/user.js')
+const User = require('D:/VCampus/vcampus-api/app/models/user.js')
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
