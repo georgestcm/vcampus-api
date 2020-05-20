@@ -4,13 +4,11 @@ const schema = mongoose.Schema;
 
 const coureSchema = new schema({   
 
-    course_id: {
-        type: String,
-        default: 1
-      },
-    user_id: {
-        type: String,
-        default: 1
+    
+    user: {
+        
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'
       },
     name: {
         type: String,
@@ -25,17 +23,18 @@ const coureSchema = new schema({
         default: null
       },
     updated_date: {
-        type: String,
-        default: null
+          type: String,
+          default: null
       },
-    isdeleted: {
-        type: Boolean,
-        default: false
-      },
-    isactive: {
-        type: Boolean,
-        default: false
-      }      
+    is_deleted: {
+          type: Boolean,
+          default: false
+        },
+    is_active: {
+          type: Boolean,
+          default: false
+        },
+         
   })
   
-  module.exports = mongoose.model('course',coureSchema,'Course')
+  module.exports = mongoose.model('course',coureSchema,'course')

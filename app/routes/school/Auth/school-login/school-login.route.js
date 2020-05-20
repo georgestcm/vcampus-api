@@ -3,7 +3,7 @@ var router = express.Router();
 
 
 var school_Login = require('../../../../controller/school/Auth/school-login/school-login.controller');
-router.post('/register_school_login', school_Login.schoolLogin);
+router.post('', school_Login.schoolLogin);
 
 
 

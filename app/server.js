@@ -35,27 +35,27 @@ app.get('/', (req, res) => {
 
 //for add/register new user
 const user=require('./routes/register/register.route');
-app.use('/',user);
+app.use('/api/register',user);
 
 //for login user
 const loginUser=require('./routes/login/login.route');
-app.use('/',loginUser);
+app.use('/api/login',loginUser);
 
 //for add curriculum
 const curriculum=require('./routes/school/curriculum/curriculum.route');
-app.use('/',curriculum);
+app.use('/api',curriculum);
 
 //for school login
 const schoolLogin=require('../app/routes/school/Auth/school-login/school-login.route');
-app.use('/',schoolLogin);
+app.use('/api/register_school_login',schoolLogin);
 
 //for add school teacher
 const schoolTeacher=require('./routes/school/teacher/teacher.route');
-app.use('/',schoolTeacher);
+app.use('/api/create_new_teacher',schoolTeacher);
 
 //for add school 
 const school=require('./routes/school/school.route');
-app.use('/',school);
+app.use('/api/save_school_data',school);
 
 //add-update-get-delete course
 const course=require('./routes/school/course/course.route');
