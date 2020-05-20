@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 
-var registerUser = require('D:/VCampus/vcampus-api/app/controller/authentication/register/register.controller.js');
+var registerUser = require('../../../app/controller/authentication/register/register.controller');
 router.post('/register', registerUser.saveRegisterDetail);
 
 

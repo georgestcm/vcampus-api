@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 
-var course = require('D:/VCampus/vcampus-api/app/controller/school/course/course.controller');
+var course = require('../../../controller/school/course/course.controller');
 
 router.post('/post_course', course.saveCourse);
 router.get('/get_course/:courseId', course.findOneCourse);

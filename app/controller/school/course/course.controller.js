@@ -3,7 +3,7 @@ const under = require("underscore")
 const router = express.Router();
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
-const Course = require('D:/VCampus/vcampus-api/app/models/school/course/course.model');
+const Course = require("../../../models/school/course/course.model.js");
 
 // Create and Save a new course
 exports.saveCourse = (req, res) => {   

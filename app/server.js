@@ -46,7 +46,7 @@ const curriculum=require('./routes/school/curriculum/curriculum.route');
 app.use('/',curriculum);
 
 //for school login
-const schoolLogin=require('./routes/school/Auth/school-login/school-login.route');
+const schoolLogin=require('../app/routes/school/Auth/school-login/school-login.route');
 app.use('/',schoolLogin);
 
 //for add school teacher
