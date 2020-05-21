@@ -19,17 +19,9 @@ const chapterSchema = new schema({
     type: Boolean,
     default: false,
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
-  },
-  section: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "sections",
-  },
-  course: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "courses",
+  topics: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "topics",
   },
 });
 

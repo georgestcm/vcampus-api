@@ -14,93 +14,99 @@ exports.saveCourse = async (req, res) => {
   courseQuery.name = req.body.CourseName;
   courseQuery.description = req.body.Description;
   courseQuery.subject = req.body.Subject;
+  courseQuery.user = req.body.UserId;
   courseQuery.school = req.body.School;
   courseQuery.curriculum = req.body.Curriculum;
-  courseQuery.availability_from = new Date();
-  courseQuery.availability_to = new Date();
+  courseQuery.availability_from = req.body.AvailabilityFrom;
+  courseQuery.availability_to = req.body.AvailabilityTo;
   courseQuery.created_date = new Date();
   courseQuery.updated_date = new Date();
-  courseQuery.is_repeat_yearly = true;
+  courseQuery.is_repeat_yearly = IsRepeatYearly;
   try {
     const result = await courseModel.create(courseQuery);
-    const sectionQuery = await saveSections(req.body.Sections, result._id);
+    const sections = await saveSections(req.body.Sections);
+    await courseModel.update({ _id: result._id }, { sections });
     res.send({ message: "Course saved successfully!" });
   } catch (error) {
-    console.log("error", error);
-    res.send(error);
+    console.log("error:", error);
+    res.send({
+      message: "Error Adding course",
+      error,
+    });
   }
 };
 
-async function saveSections(sections, _id) {
+async function saveSections(sections) {
+  let sectionResults = [];
   for (let index = 0; index < sections.length; index++) {
     const sectionQuery = {};
     sectionQuery.section_name = sections[index].SectionName;
-    sectionQuery.course = _id;
     sectionQuery.updated_date = new Date();
     sectionQuery.created_date = new Date();
     const result = await sectionModel.create(sectionQuery);
-    const chapterQuery = await saveChapters(
-      sections[index].Chapter,
-      result._id,
-      _id
-    );
+    sectionResults.push(result._id);
+    const chapters = await saveChapters(sections[index].Chapter);
+    await sectionModel.update({ _id: result._id }, { chapters });
   }
-  return true;
+  return sectionResults;
 }
-async function saveChapters(chapters, _id, courseId) {
+async function saveChapters(chapters) {
+  let chapterResults = [];
   for (let index = 0; index < chapters.length; index++) {
     const chapterQuery = {};
     chapterQuery.chapter_name = chapters[index].ChapterName;
-    chapterQuery.course = courseId;
-    chapterQuery.section = _id;
     chapterQuery.updated_date = new Date();
     chapterQuery.created_date = new Date();
     const result = await chapterModel.create(chapterQuery);
-    const chapter = await saveTopics(
-      chapters[index].Topics,
-      result._id,
-      courseId,
-      _id
-    );
+    chapterResults.push(result._id);
+    const topics = await saveTopics(chapters[index].Topics);
+    await chapterModel.update({ _id: result._id }, { topics });
   }
-  return true;
+  return chapterResults;
 }
-async function saveTopics(topics, _id, courseId, sectionId) {
+async function saveTopics(topics) {
+  let topicResults = [];
   for (let index = 0; index < topics.length; index++) {
     const topicQuery = {};
     topicQuery.topic_name = topics[index].TopicName;
-    topicQuery.course = courseId;
-    topicQuery.section = sectionId;
-    topicQuery.chapter = _id;
     topicQuery.paragraph = topics[index].Paragraph;
     topicQuery.updated_date = new Date();
     topicQuery.created_date = new Date();
     const result = await topicModel.create(topicQuery);
+    topicResults.push(result._id);
   }
-  return true;
+  return topicResults;
 }
 
-// Find a single Course with a CourseId
-exports.findOneCourse = (req, res) => {
-  Course.findById(req.params.courseId)
-    .then((course) => {
-      if (!course) {
-        return res.status(404).send({
-          message: "course not found with id " + req.params.courseId,
-        });
-      }
-      res.send(course);
-    })
-    .catch((err) => {
-      if (err.kind === "ObjectId") {
-        return res.status(404).send({
-          message: "course not found with id " + req.params.courseId,
-        });
-      }
-      return res.status(500).send({
-        message: "Error retrieving course with id " + req.params.courseId,
-      });
+exports.findCourseById = async (req, res) => {
+  try {
+    const result = await courseModel
+      .findById(req.params.courseId)
+      .populate("users")
+      .populate("sections")
+      .populate("sections.chapters")
+      .populate("chapters.topics");
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error retrieving course with id " + req.params.courseId,
+      error,
     });
+  }
+};
+
+exports.findCourses = async (req, res) => {
+  try {
+    const result = await courseModel.find();
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error retrieving courses",
+      error,
+    });
+  }
 };
 
 // Update a course identified by the courseId in the request

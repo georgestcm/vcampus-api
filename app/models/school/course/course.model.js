@@ -44,6 +44,10 @@ const coureSchema = new schema({
     type: Boolean,
     default: false,
   },
+  sections: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "sections",
+  },
 });
 
 module.exports = mongoose.model("courses", coureSchema);
