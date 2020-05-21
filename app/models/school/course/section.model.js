@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const schema = mongoose.Schema;
-const chapter= require
+
 
 const sectionSchema = new schema({   
 

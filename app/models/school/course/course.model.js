@@ -5,8 +5,7 @@ const schema = mongoose.Schema;
 const coureSchema = new schema({   
 
     
-    user: {
-        
+    user: {        
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
       },

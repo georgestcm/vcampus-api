@@ -3,25 +3,48 @@ const under = require("underscore")
 const router = express.Router();
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
-const Course = require("../../../models/school/course/course.model.js");
+const Course = require("../../../models/school/course/course.model");
+const Section= require("../../../models/school/course/section.model");
+const Chapter= require("../../../models/school/course/section.model");
+const Topic= require("../../../models/school/course/section.model");
 
 // Create and Save a new course
-exports.saveCourse = (req, res) => {   
+exports.saveCourse =  (req, res) => {   
         const course = new Course({       
         name: req.body.name,
         description: req.body.description,
         created_date: req.body.created_date,
         updated_date: req.body.updated_date
     });
-    // Save course in the database
-    course.save()
-    .then(data => {
-        var payload = { _id: data.course_id };
-      var token = jwt.sign(payload, "HS256", {
-        expiresIn: "1d"
-      });
-        res.send(data,token);
-    }).catch(err => {
+
+    // Save course in the database   
+    course.save().then( (req,res)=>{  
+       const sectionDetail= new Section(
+           sections=[ 
+                        {
+                        //sectionid:req.body.section,
+                        section_name= req.body.section_name
+                        }
+                    ]
+       )
+       for(const section1 in sectionDetail) {
+
+            section1.save().then(data,(req,res)=>{
+                res.send(data);
+                
+            //  var chapter=new Chapter({
+            //     chapterid:req.body.chapter,
+            //     chapter_name:req.body.chapter_name
+            //  })
+            //  for(var chapter in chapterDetail){
+
+            //  }            
+        })
+     }
+       
+             
+}
+    ).catch(err => {
         res.status(500).send({
             message: err.message || "Some error occurred while creating the course."
         });
