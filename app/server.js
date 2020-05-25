@@ -66,4 +66,5 @@ const school = require("./routes/school/school.route");
 app.use("/api/save_school_data", school);
 
 //add-update-get-delete course
+const course = require("./routes/school/course/course.route");
 app.use("/api", course);
