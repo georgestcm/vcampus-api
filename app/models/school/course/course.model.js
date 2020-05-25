@@ -22,10 +22,10 @@ const coureSchema = new schema({
     type: String,
   },
   availability_from: {
-    type: Date,
+    type: String,
   },
   availability_to: {
-    type: Date,
+    type: String,
   },
   is_repeat_yearly: {
     type: Boolean,
@@ -44,10 +44,12 @@ const coureSchema = new schema({
     type: Boolean,
     default: false,
   },
-  sections: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: "sections",
-  },
+  sections: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sections",
+    },
+  ],
 });
 
-module.exports = mongoose.model("courses", coureSchema);
+module.exports = mongoose.model("Courses", coureSchema, "Courses");

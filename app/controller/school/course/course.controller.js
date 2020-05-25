@@ -21,7 +21,7 @@ exports.saveCourse = async (req, res) => {
   courseQuery.availability_to = req.body.AvailabilityTo;
   courseQuery.created_date = new Date();
   courseQuery.updated_date = new Date();
-  courseQuery.is_repeat_yearly = IsRepeatYearly;
+  courseQuery.is_repeat_yearly = req.body.IsRepeatYearly;
   try {
     const result = await courseModel.create(courseQuery);
     const sections = await saveSections(req.body.Sections);
@@ -81,11 +81,22 @@ async function saveTopics(topics) {
 exports.findCourseById = async (req, res) => {
   try {
     const result = await courseModel
-      .findById(req.params.courseId)
-      .populate("users")
-      .populate("sections")
-      .populate("sections.chapters")
-      .populate("chapters.topics");
+      .findOne({ _id: req.params.courseId, is_deleted: false })
+      .populate({
+        path: "sections",
+        model: "Sections",
+        match: { is_deleted: false },
+        populate: {
+          path: "chapters",
+          model: "Chapters",
+          match: { is_deleted: false },
+          populate: {
+            path: "topics",
+            model: "Topics",
+            match: { is_deleted: false },
+          },
+        },
+      });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -98,7 +109,7 @@ exports.findCourseById = async (req, res) => {
 
 exports.findCourses = async (req, res) => {
   try {
-    const result = await courseModel.find();
+    const result = await courseModel.find({ is_deleted: false });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -109,65 +120,75 @@ exports.findCourses = async (req, res) => {
   }
 };
 
-// Update a course identified by the courseId in the request
-exports.updateCourse = (req, res) => {
-  // Validate Request
-  if (!req.body.name) {
-    return res.status(400).send({
-      message: "course content can not be empty",
+exports.deleteCourse = async (req, res) => {
+  try {
+    const result = await courseModel.update(
+      { _id: req.params.courseId },
+      { is_deleted: true }
+    );
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error delete course with id " + req.params.courseId,
+      error,
     });
   }
-
-  // Find course and update it with the request body
-  Course.findByIdAndUpdate(
-    req.params.courseId,
-    {
-      name: req.body.name,
-      description: req.body.description,
-      created_date: req.body.created_date,
-      updated_date: req.body.updated_date,
-    },
-    { new: true }
-  )
-    .then((course) => {
-      if (!course) {
-        return res.status(404).send({
-          message: "course not found with id " + req.params.courseId,
-        });
-      }
-      res.send(course);
-    })
-    .catch((err) => {
-      if (err.kind === "ObjectId") {
-        return res.status(404).send({
-          message: "course not found with id " + req.params.courseId,
-        });
-      }
-      return res.status(500).send({
-        message: "Error updating course with id " + req.params.courseId,
-      });
-    });
 };
 
-// Delete a course with the specified courseId in the request
-exports.deleteCourse = (req, res) => {
-  Course.findByIdAndRemove(req.params.courseId)
-    .then((course) => {
-      if (!course) {
-        return res.status(404).send({
-          message: "course not found with id " + req.params.courseId,
-        });
-      }
-      res.send({ message: "course deleted successfully!" });
-    })
-    .catch((err) => {
-      if (err.kind === "ObjectId" || err.name === "NotFound") {
-        return res.status(404).send({
-          message: "course not found with id " + req.params.courseId,
-        });
-      }
-      return res.status(500).send({
-        message: "Could not delete course with id " + req.params.courseId,
-      });
+exports.updateCourse = async (req, res) => {
+  const courseQuery = {};
+  courseQuery.name = req.body.CourseName;
+  courseQuery.description = req.body.Description;
+  courseQuery.subject = req.body.Subject;
+  courseQuery.user = req.body.UserId;
+  courseQuery.school = req.body.School;
+  courseQuery.curriculum = req.body.Curriculum;
+  courseQuery.availability_from = req.body.AvailabilityFrom;
+  courseQuery.availability_to = req.body.AvailabilityTo;
+  courseQuery.updated_date = new Date();
+  courseQuery.is_repeat_yearly = req.body.IsRepeatYearly;
+  try {
+    await courseModel.update({ _id: req.params.courseId }, courseQuery);
+    const sections = await updateSections(req.body.Sections);
+    res.send({ message: "Course updated successfully!" });
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error updating course",
+      error,
     });
+  }
 };
+
+async function updateSections(sections) {
+  for (let index = 0; index < sections.length; index++) {
+    const sectionQuery = {};
+    sectionQuery.section_name = sections[index].SectionName;
+    sectionQuery.updated_date = new Date();
+    sectionQuery.is_deleted = sections[index];
+    await sectionModel.update({ _id: sections[index].SectionId }, sectionQuery);
+    const chapters = await updateChapters(sections[index].Chapter);
+  }
+  return true;
+}
+async function updateChapters(chapters) {
+  for (let index = 0; index < chapters.length; index++) {
+    const chapterQuery = {};
+    chapterQuery.chapter_name = chapters[index].ChapterName;
+    chapterQuery.updated_date = new Date();
+    await chapterModel.update({ _id: chapters[index].ChapterId }, chapterQuery);
+    const topics = await updateTopics(chapters[index].Topics);
+  }
+  return true;
+}
+async function updateTopics(topics) {
+  for (let index = 0; index < topics.length; index++) {
+    const topicQuery = {};
+    topicQuery.topic_name = topics[index].TopicName;
+    topicQuery.paragraph = topics[index].Paragraph;
+    topicQuery.updated_date = new Date();
+    await topicModel.update({ _id: topics[index].TopicId }, topicQuery);
+  }
+  return true;
+}

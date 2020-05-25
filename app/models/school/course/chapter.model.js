@@ -19,10 +19,12 @@ const chapterSchema = new schema({
     type: Boolean,
     default: false,
   },
-  topics: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: "topics",
-  },
+  topics: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Topics",
+    },
+  ],
 });
 
-module.exports = mongoose.model("chapters", chapterSchema);
+module.exports = mongoose.model("Chapters", chapterSchema, "Chapters");

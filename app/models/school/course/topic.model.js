@@ -33,4 +33,4 @@ const topicSchema = new schema({
   },
 });
 
-module.exports = mongoose.model("topics", topicSchema);
+module.exports = mongoose.model("Topics", topicSchema, "Topics");
