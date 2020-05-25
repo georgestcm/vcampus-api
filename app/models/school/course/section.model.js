@@ -19,14 +19,12 @@ const sectionSchema = new schema({
     type: Boolean,
     default: false,
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
-  },
-  course: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "courses",
-  },
+  chapters: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chapters",
+    },
+  ],
 });
 
-module.exports = mongoose.model("sections", sectionSchema);
+module.exports = mongoose.model("Sections", sectionSchema, "Sections");

@@ -31,22 +31,6 @@ const topicSchema = new schema({
     type: Boolean,
     default: false,
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
-  },
-  course: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "courses",
-  },
-  section: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "sections",
-  },
-  chapter: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "chapters",
-  },
 });
 
-module.exports = mongoose.model("topics", topicSchema);
+module.exports = mongoose.model("Topics", topicSchema, "Topics");
