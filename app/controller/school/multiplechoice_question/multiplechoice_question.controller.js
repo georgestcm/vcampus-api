@@ -4,6 +4,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const questionModel = require("../../../models/school/course/multiplechoice_question.model");
+const examModel = require("../../../models/school/course/exam.model");
 
 // Create and Save a new question
 exports.saveQuestion = async (req, res,ExamId) => {
@@ -15,8 +16,9 @@ exports.saveQuestion = async (req, res,ExamId) => {
     questionQuery.correct_answer = req.body.Correct_answer; 
     
     try {
-      const result = await questionModel.create(questionQuery);     
-      res.send({ message: "Question saved successfully!" });
+      const result = await questionModel.create(questionQuery)
+       
+      res.send(result,{ message: "Question saved successfully!" });
     } catch (error) {
       console.log("error", error);
       res.send(error);

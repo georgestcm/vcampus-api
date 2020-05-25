@@ -5,10 +5,10 @@ const mongoose = require("mongoose");
 const examModel = require("../../../models/school/course/exam.model");
 
 
-exports.saveExam = async (req, res, _id,QuestionId) => {
+exports.saveExam = async (req, res) => {
     const examQuery = {};
-    examQuery.course = req.body._id;
-    examQuery.questions=req.body.QuestionId
+    // examQuery.course = req.body.Course;
+    // examQuery.questions=req.body.Question;
     examQuery.exam_name = req.body.Exam_Name;
     examQuery.exam_description = req.body.Exam_Description;
     examQuery.exam_startDateTime = req.body.Exam_StartDateTime;
