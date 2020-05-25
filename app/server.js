@@ -68,3 +68,13 @@ app.use("/api/save_school_data", school);
 //add-update-get-delete course
 const course = require("./routes/school/course/course.route");
 app.use("/api", course);
+
+//add-update-get-delete exam
+const exam = require("./routes/school/exam/exam.route");
+app.use("/api", exam);
+
+
+//add-update-get-delete question
+const question = require("./routes/school/multiplechoice_question/multiplechoice_question.route");
+app.use("/api", question);
+

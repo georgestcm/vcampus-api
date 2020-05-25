@@ -7,8 +7,7 @@ const examModel = require("../../../models/school/course/exam.model");
 
 exports.saveExam = async (req, res) => {
     const examQuery = {};
-    // examQuery.course = req.body.Course;
-    // examQuery.questions=req.body.Question;
+  
     examQuery.exam_name = req.body.Exam_Name;
     examQuery.exam_description = req.body.Exam_Description;
     examQuery.exam_startDateTime = req.body.Exam_StartDateTime;
@@ -26,7 +25,10 @@ exports.saveExam = async (req, res) => {
 
   // Find a single exam with a examId
 exports.findOneExam = (req, res) => {
-  examModel.find({_id:req.params.examId, is_deleted: false} )
+  examModel.find({_id:req.params.examId, is_deleted: false} ).populate({
+    path: "questions",
+    model: "multichoice_question",
+    match: { is_deleted: false }})
   .then((exam) => {
     if (!exam ) {
       return res.status(404).send({

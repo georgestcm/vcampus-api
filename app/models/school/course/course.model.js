@@ -6,6 +6,12 @@ const coureSchema = new schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },
+  sections: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sections",
+    },
+  ],
   name: {
     type: String,
   },
@@ -44,12 +50,7 @@ const coureSchema = new schema({
     type: Boolean,
     default: false,
   },
-  sections: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Sections",
-    },
-  ],
+ 
 });
 
 module.exports = mongoose.model("Courses", coureSchema, "Courses");

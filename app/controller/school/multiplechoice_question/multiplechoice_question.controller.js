@@ -7,18 +7,20 @@ const questionModel = require("../../../models/school/course/multiplechoice_ques
 const examModel = require("../../../models/school/course/exam.model");
 
 // Create and Save a new question
-exports.saveQuestion = async (req, res,ExamId) => {
- // for (let index = 0; index < questions.length; index++) {
+exports.saveQuestion = async (req, res) => {
+  
     const questionQuery = {};
+    //questionQuery.user = req.body.UserId;
     questionQuery.exam = req.body.ExamId;
     questionQuery.question_title = req.body.Question_title;
     questionQuery.question_options =  req.body.Question_options;
     questionQuery.correct_answer = req.body.Correct_answer; 
     
     try {
-      const result = await questionModel.create(questionQuery)
-       
-      res.send(result,{ message: "Question saved successfully!" });
+      const result = await questionModel.create(questionQuery);
+     
+      await examModel.update({ _id:req.body.ExamId },{ $push: { questions: result._id } }  );
+      res.send({ message: "Question saved successfully!" });
     } catch (error) {
       console.log("error", error);
       res.send(error);

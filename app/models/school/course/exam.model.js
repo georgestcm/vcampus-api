@@ -56,4 +56,4 @@ const examSchema = new schema({
     }
   )
   
-  module.exports = mongoose.model('exam',examSchema,'exam')
+  module.exports = mongoose.model('Exam',examSchema,'exam')
