@@ -4,23 +4,36 @@ const schema = mongoose.Schema;
 
 const multichoice_questionSchema = new schema({   
     
-    
-    question: {
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users"
+    },  
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "courses"
+    },
+    exam: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "exam"
+    },
+    question_title: {
         type: String,
         default: null
     },   
-    options:{
-        type:Array,
-        default:[]
-        },     
-    created_date: {
-        type: String,
+    question_options:[{
+            optionid:{
+                    type:Number,
+                    default:null
+                    },
+            option:{
+                type:String,
+                default:null
+                    }   
+            }],
+    correct_answer: {
+        type: Number,
         default: null
-    },
-    updated_date: {
-        type: String,
-        default: null
-    },
+    },     
     is_deleted: {
         type: Boolean,
         default: false
@@ -29,15 +42,7 @@ const multichoice_questionSchema = new schema({
         type: Boolean,
         default: false
     },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'users'
-    },  
-    course: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'course'
-    }      
-    }
-  )
+   
+    })
   
   module.exports = mongoose.model('multichoice_question',multichoice_questionSchema,'multichoice_question')

@@ -5,15 +5,15 @@ const schema = mongoose.Schema;
 const examSchema = new schema({   
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users'
-    },  
+        ref: "users"
+      }, 
     course: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'course'
+        ref: "courses"
     },
     questions:{
         type: [mongoose.Schema.Types.ObjectId],
-        ref:'multichoice_question'
+        ref:"multichoice_question"
         },       
     exam_name: {
         type: String,
