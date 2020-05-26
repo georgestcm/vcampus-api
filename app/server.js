@@ -1,12 +1,20 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require("cors");
+// const cors = require("cors");
+cors = require("cors");
 const app = express();
-app.use(cors());
+//app.use(cors());
 const mongoose = require("mongoose");
 const dbConfig = require("../app/core/config/db.config");
 const router = express.Router();
 
+//cors policy
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
 //const PORT = process.env.PORT || 3000;
 app.listen(process.env.PORT || 3000, function () {
   console.log("server has been started");
@@ -20,7 +28,7 @@ app.use(
     parameterLimit: 50000,
   })
 );
-//const dbConfig = require('./config/database.config.js');
+
 mongoose.Promise = global.Promise;
 
 // Connecting to the database
@@ -39,6 +47,8 @@ mongoose
 app.get("/", (req, res) => {
   res.json("api ready vcampus");
 });
+
+app.use(cors());
 
 //for add/register new user
 const user = require("./routes/register/register.route");

@@ -1,5 +1,3 @@
-
-
 // Import all our dependencies
 var express  = require('express');
 var app      = express();
@@ -27,16 +25,24 @@ app.all('*', function(req, res, next) {
 });
 
 app.get('/', function(req, res) {
-  //send the index.html in our app directory
+  //send the index.html in our public directory
   res.sendFile("index.html",{ root : __dirname});
 
 });
 
 
-//Listen for connection
-io.on('connection', function(socket) {
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-  });
+io.sockets.on('connection', function(socket) {
+    socket.on('username', function(username) {
+        socket.username = username;
+        io.emit('is_online', '🔵 <i>' + socket.username + ' join the chat..</i>');
+    });
+
+    socket.on('disconnect', function(username) {
+        io.emit('is_offline', '🔴 <i>' + socket.username + ' left the chat..</i>');
+    })
+
+    socket.on('chat_message', function(message) {
+        io.emit('chat_message', '<strong>' + socket.username + '</strong>: ' + message);
+    });
 
 });
