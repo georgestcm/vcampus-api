@@ -1,13 +1,13 @@
-// server.js
+
 
 // Import all our dependencies
 var express  = require('express');
 var app      = express();
 var server   = require('http').Server(app);
 var io       = require('socket.io')(server);
-
+var path = require('path');
 // tell express where to serve static files from
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/app'));
 
 
 server.listen(9992);
@@ -27,8 +27,9 @@ app.all('*', function(req, res, next) {
 });
 
 app.get('/', function(req, res) {
-  //send the index.html in our public directory
-  res.sendfile('./vcampus-api/app/indext.html');
+  //send the index.html in our app directory
+  res.sendFile("index.html",{ root : __dirname});
+
 });
 
 

@@ -21,7 +21,6 @@ app.use(
   })
 );
 //const dbConfig = require('./config/database.config.js');
-
 mongoose.Promise = global.Promise;
 
 // Connecting to the database
