@@ -34,11 +34,11 @@ const multichoice_questionSchema = new schema({
         type: Number,
         default: null
     },     
-    is_deleted: {
+    Is_deleted: {
         type: Boolean,
         default: false
     },
-    is_require: {
+    Is_require: {
         type: Boolean,
         default: false
     },

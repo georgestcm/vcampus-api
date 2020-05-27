@@ -29,7 +29,7 @@ exports.saveQuestion = async (req, res) => {
 
   // Find a single Question with a QuestionId
 exports.findOneQuestion = (req, res) => {
-    questionModel.find({_id:req.params.questionId, is_deleted:false})
+    questionModel.find({_id:req.params.questionId, Is_deleted:false})
     .then((question) => {
       if (!question) {
         return res.status(404).send({
@@ -52,7 +52,7 @@ exports.findOneQuestion = (req, res) => {
 
 // Retrieve and return all Questions from the database.
 exports.findAll = (req, res) => {
-    questionModel.find( { is_deleted: false })
+    questionModel.find( { Is_deleted: false })
     .then(questions => {
         res.send(questions);
     }).catch(err => {
@@ -104,7 +104,7 @@ exports.updateQuestion = (req, res) => {
 
   // Delete a question with the specified questionId in the request
 exports.deleteQuestion = (req, res) => {
-    questionModel.findByIdAndUpdate(req.params.questionId,{ is_deleted: true })
+    questionModel.findByIdAndUpdate(req.params.questionId,{ Is_deleted: true })
     .then((question) => {
       if (!question) {
         return res.status(404).send({

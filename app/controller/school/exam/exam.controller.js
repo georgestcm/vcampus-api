@@ -72,8 +72,7 @@ exports.updateExam = (req, res) => {
   
     // Find exam and update it with the request body
     examModel.findByIdAndUpdate(
-      req.params.examId,
-      
+      req.params.examId,      
       {
         Exam_Name : req.body.Exam_Name,
         Exam_Description : req.body.Exam_Description,
