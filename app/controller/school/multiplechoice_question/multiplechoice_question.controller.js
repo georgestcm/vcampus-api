@@ -12,9 +12,9 @@ exports.saveQuestion = async (req, res) => {
     const questionQuery = {};
     //questionQuery.user = req.body.UserId;
     questionQuery.exam = req.body.ExamId;
-    questionQuery.question_title = req.body.Question_title;
-    questionQuery.question_options =  req.body.Question_options;
-    questionQuery.correct_answer = req.body.Correct_answer; 
+    questionQuery.Question_title = req.body.Question_title;
+    questionQuery.Question_options =  req.body.Question_options;
+    questionQuery.Correct_answer = req.body.Correct_answer; 
     
     try {
       const result = await questionModel.create(questionQuery);
@@ -75,9 +75,9 @@ exports.updateQuestion = (req, res) => {
     questionModel.findByIdAndUpdate(
       req.params.questionId,
       {        
-        question_title : req.body.Question_title,
-        question_options :  req.body.Question_options,
-        correct_answer : req.body.Correct_answer 
+        Question_title : req.body.Question_title,
+        Question_options :  req.body.Question_options,
+        Correct_answer : req.body.Correct_answer 
       },
       { new: true }
     )
