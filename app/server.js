@@ -1,12 +1,20 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require("cors");
+// const cors = require("cors");
+cors = require("cors");
 const app = express();
-app.use(cors());
+//app.use(cors());
 const mongoose = require("mongoose");
 const dbConfig = require("../app/core/config/db.config");
 const router = express.Router();
 
+//cors policy
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
 //const PORT = process.env.PORT || 3000;
 app.listen(process.env.PORT || 3000, function () {
   console.log("server has been started");
@@ -20,7 +28,6 @@ app.use(
     parameterLimit: 50000,
   })
 );
-//const dbConfig = require('./config/database.config.js');
 
 mongoose.Promise = global.Promise;
 
@@ -40,6 +47,8 @@ mongoose
 app.get("/", (req, res) => {
   res.json("api ready vcampus");
 });
+
+app.use(cors());
 
 //for add/register new user
 const user = require("./routes/register/register.route");
@@ -68,3 +77,24 @@ app.use("/api/save_school_data", school);
 //add-update-get-delete course
 const course = require("./routes/school/course/course.route");
 app.use("/api", course);
+
+//add-update-get-delete exam
+const exam = require("./routes/school/exam/exam.route");
+app.use("/api", exam);
+
+//add-update-get-delete question
+const question = require("./routes/school/multiplechoice_question/multiplechoice_question.route");
+app.use("/api", question);
+
+//add-update-get-delete chat
+const chat = require("./routes/chat/chat.route");
+app.use("/api", chat);
+
+//add-update-get-delete group
+const group = require("./routes/chat/Group/group.route");
+app.use("/api", group);
+
+//add-update-get-delete groupmember
+const groupmember = require("./routes/chat/Group/groupmember.route");
+app.use("/api", groupmember);
+

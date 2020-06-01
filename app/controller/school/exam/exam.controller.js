@@ -7,14 +7,13 @@ const examModel = require("../../../models/school/course/exam.model");
 
 exports.saveExam = async (req, res) => {
     const examQuery = {};
-    // examQuery.course = req.body.Course;
-    // examQuery.questions=req.body.Question;
-    examQuery.exam_name = req.body.Exam_Name;
-    examQuery.exam_description = req.body.Exam_Description;
-    examQuery.exam_startDateTime = req.body.Exam_StartDateTime;
-    examQuery.exam_endDateTime = req.body.Exam_EndDateTime;
-    examQuery.created_date = new Date();
-    examQuery.updated_date = new Date();
+  
+    examQuery.Exam_Name = req.body.Exam_Name;
+    examQuery.Exam_Description = req.body.Exam_Description;
+    examQuery.Exam_StartDateTime = req.body.Exam_StartDateTime;
+    examQuery.Exam_EndDateTime = req.body.Exam_EndDateTime;
+    examQuery.Created_Date = new Date();
+    examQuery.Updated_Date = new Date();
      try {
       const result = await examModel.create(examQuery);
       res.send({ message: "Exam Detail save successfully!" });
@@ -26,7 +25,10 @@ exports.saveExam = async (req, res) => {
 
   // Find a single exam with a examId
 exports.findOneExam = (req, res) => {
-  examModel.find({_id:req.params.examId, is_deleted: false} )
+  examModel.find({_id:req.params.examId, Is_deleted: false} ).populate({
+    path: "questions",
+    model: "multichoice_question",
+    match: { Is_deleted: false }})
   .then((exam) => {
     if (!exam ) {
       return res.status(404).send({
@@ -49,7 +51,7 @@ exports.findOneExam = (req, res) => {
 
 // Retrieve and return all exams from the database.
 exports.findAll = (req, res) => {
-  examModel.find( { is_deleted: false })
+  examModel.find( { Is_deleted: false })
   .then(exams => {
       res.send(exams);
   }).catch(err => {
@@ -70,15 +72,13 @@ exports.updateExam = (req, res) => {
   
     // Find exam and update it with the request body
     examModel.findByIdAndUpdate(
-      req.params.examId,
-      
+      req.params.examId,      
       {
-        exam_name : req.body.Exam_Name,
-        exam_description : req.body.Exam_Description,
-        exam_startDateTime : req.body.Exam_StartDateTime,
-        exam_endDateTime : req.body.Exam_EndDateTime,
-        updated_date :new Date(),
-       
+        Exam_Name : req.body.Exam_Name,
+        Exam_Description : req.body.Exam_Description,
+        Exam_StartDateTime : req.body.Exam_StartDateTime,
+        Exam_EndDateTime : req.body.Exam_EndDateTime,
+        Updated_Date :new Date()       
       },
       { new: true },
     )
@@ -105,7 +105,7 @@ exports.updateExam = (req, res) => {
   //for delete exam
   exports.deleteExam = (req, res) => {
    
-    examModel.findByIdAndUpdate(req.params.examId, { is_deleted: true },  { new: true })
+    examModel.findByIdAndUpdate(req.params.examId, { Is_deleted: true },  { new: true })
     .then((exam) => {
       if (!exam) {
         return res.status(404).send({

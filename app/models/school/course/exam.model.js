@@ -15,19 +15,19 @@ const examSchema = new schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref:"multichoice_question"
         },       
-    exam_name: {
+    Exam_Name: {
         type: String,
         default: null
     },
-    exam_description: {
+    Exam_Description: {
         type: String,
         default: null
     },
-    exam_startDateTime: {
+    Exam_StartDateTime: {
         type: String,
         default: null
     },
-    exam_endDateTime: {
+    Exam_EndDateTime: {
         type: String,
         default: null
     }, 
@@ -35,19 +35,19 @@ const examSchema = new schema({
         type: Boolean,
         default: false
     },      
-    created_date: {
+    Created_Date: {
         type: String,
         default: null
     },
-    updated_date: {
+    Updated_Date: {
         type: String,
         default: null
     },
-    deleted_date: {
+    Deleted_Date: {
         type: String,
         default: null
     },
-    is_deleted: {
+    Is_deleted: {
         type: Boolean,
         default: false
     },
@@ -56,4 +56,4 @@ const examSchema = new schema({
     }
   )
   
-  module.exports = mongoose.model('exam',examSchema,'exam')
+  module.exports = mongoose.model('Exam',examSchema,'exam')

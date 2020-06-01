@@ -16,11 +16,11 @@ const multichoice_questionSchema = new schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "exam"
     },
-    question_title: {
+    Question_title: {
         type: String,
         default: null
     },   
-    question_options:[{
+    Question_options:[{
             optionid:{
                     type:Number,
                     default:null
@@ -30,15 +30,15 @@ const multichoice_questionSchema = new schema({
                 default:null
                     }   
             }],
-    correct_answer: {
+    Correct_answer: {
         type: Number,
         default: null
     },     
-    is_deleted: {
+    Is_deleted: {
         type: Boolean,
         default: false
     },
-    is_require: {
+    Is_require: {
         type: Boolean,
         default: false
     },
