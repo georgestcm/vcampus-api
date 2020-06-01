@@ -86,3 +86,15 @@ app.use("/api", exam);
 const question = require("./routes/school/multiplechoice_question/multiplechoice_question.route");
 app.use("/api", question);
 
+//add-update-get-delete chat
+const chat = require("./routes/chat/chat.route");
+app.use("/api", chat);
+
+//add-update-get-delete group
+const group = require("./routes/chat/Group/group.route");
+app.use("/api", group);
+
+//add-update-get-delete groupmember
+const groupmember = require("./routes/chat/Group/groupmember.route");
+app.use("/api", groupmember);
+

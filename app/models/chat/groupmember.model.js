@@ -1,23 +1,22 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
-const chatSchema = new schema({
- 
+const groupMemberSchema = new schema({
+  AdminId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  },
+  GroupMemberId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  },
   GroupId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Group",
   },
-  To:{
+  Chat: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-  },
-  From:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-  }, 
-  Message:{
-    type: String,
-    default: null
+    ref: "Chat",
   },
   Created_Date: {
     type: String,
@@ -30,9 +29,13 @@ const chatSchema = new schema({
   Is_deleted: {
         type: Boolean,
         default: false
-    }
-    
+    },
+  Is_active: {
+        type: Boolean,
+        default: true
+    }  ,
+ 
  
 });
 
-module.exports = mongoose.model("Chat", chatSchema, "Chat");
+module.exports = mongoose.model("GroupMember", groupMemberSchema, "GroupMember");
