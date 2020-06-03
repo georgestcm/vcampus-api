@@ -166,7 +166,7 @@ async function updateSections(sections) {
     const sectionQuery = {};
     sectionQuery.section_name = sections[index].SectionName;
     sectionQuery.updated_date = new Date();
-    sectionQuery.is_deleted = sections[index];
+    sectionQuery.is_deleted = sections[index].isDeleted || false;
     await sectionModel.update({ _id: sections[index].SectionId }, sectionQuery);
     const chapters = await updateChapters(sections[index].Chapter);
   }
