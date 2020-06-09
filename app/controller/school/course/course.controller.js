@@ -150,7 +150,10 @@ exports.updateCourse = async (req, res) => {
   courseQuery.is_repeat_yearly = req.body.IsRepeatYearly;
   try {
     await courseModel.update({ _id: req.params.courseId }, courseQuery);
-    const sections = await updateSections(req.body.Sections);
+    const sections = await updateSections(
+      req.body.Sections,
+      req.params.courseId
+    );
     res.send({ message: "Course updated successfully!" });
   } catch (error) {
     console.log("error:", error);
@@ -161,34 +164,85 @@ exports.updateCourse = async (req, res) => {
   }
 };
 
-async function updateSections(sections) {
+async function updateSections(sections, courseId) {
   for (let index = 0; index < sections.length; index++) {
     const sectionQuery = {};
-    sectionQuery.section_name = sections[index].SectionName;
-    sectionQuery.updated_date = new Date();
-    sectionQuery.is_deleted = sections[index].isDeleted || false;
-    await sectionModel.update({ _id: sections[index].SectionId }, sectionQuery);
-    const chapters = await updateChapters(sections[index].Chapter);
+    if (sections[index].SectionId === 0) {
+      sectionQuery.section_name = sections[index].SectionName;
+      sectionQuery.updated_date = new Date();
+      sectionQuery.created_date = new Date();
+      const result = await sectionModel.create(sectionQuery);
+      await courseModel.update(
+        { _id: courseId },
+        { sections: { $push: result._id } }
+      );
+      const chapters = await updateChapters(
+        sections[index].Chapters,
+        result._id
+      );
+    } else {
+      sectionQuery.section_name = sections[index].SectionName;
+      sectionQuery.updated_date = new Date();
+      sectionQuery.is_deleted = sections[index].isDeleted || false;
+      await sectionModel.update(
+        { _id: sections[index].SectionId },
+        sectionQuery
+      );
+      const chapters = await updateChapters(
+        sections[index].Chapters,
+        sections[index].SectionId
+      );
+    }
   }
   return true;
 }
-async function updateChapters(chapters) {
+async function updateChapters(chapters, sectionId) {
   for (let index = 0; index < chapters.length; index++) {
     const chapterQuery = {};
-    chapterQuery.chapter_name = chapters[index].ChapterName;
-    chapterQuery.updated_date = new Date();
-    await chapterModel.update({ _id: chapters[index].ChapterId }, chapterQuery);
-    const topics = await updateTopics(chapters[index].Topics);
+    if (chapters[index].ChapterId === 0) {
+      chapterQuery.chapter_name = chapters[index].ChapterName;
+      chapterQuery.created_date = new Date();
+      chapterQuery.updated_date = new Date();
+      const result = await chapterModel.create(chapterQuery);
+      await sectionModel.update(
+        { _id: sectionId },
+        { chapters: { $push: result._id } }
+      );
+      const topics = await updateTopics(chapters[index].Topics, result._id);
+    } else {
+      chapterQuery.chapter_name = chapters[index].ChapterName;
+      chapterQuery.updated_date = new Date();
+      await chapterModel.update(
+        { _id: chapters[index].ChapterId },
+        chapterQuery
+      );
+      const topics = await updateTopics(
+        chapters[index].Topics,
+        chapters[index].ChapterId
+      );
+    }
   }
   return true;
 }
-async function updateTopics(topics) {
+async function updateTopics(topics, chapterId) {
   for (let index = 0; index < topics.length; index++) {
     const topicQuery = {};
-    topicQuery.topic_name = topics[index].TopicName;
-    topicQuery.paragraph = topics[index].Paragraph;
-    topicQuery.updated_date = new Date();
-    await topicModel.update({ _id: topics[index].TopicId }, topicQuery);
+    if (topics[index].TopicId === 0) {
+      topicQuery.topic_name = topics[index].TopicName;
+      topicQuery.paragraph = topics[index].Paragraph;
+      topicQuery.created_date = new Date();
+      topicQuery.updated_date = new Date();
+      const result = await topicModel.create(topicQuery);
+      await chapterModel.update(
+        { _id: chapterId },
+        { topics: { $push: result._id } }
+      );
+    } else {
+      topicQuery.topic_name = topics[index].TopicName;
+      topicQuery.paragraph = topics[index].Paragraph;
+      topicQuery.updated_date = new Date();
+      await topicModel.update({ _id: topics[index].TopicId }, topicQuery);
+    }
   }
   return true;
 }
