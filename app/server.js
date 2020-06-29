@@ -5,6 +5,7 @@ const app = express();
 const mongoose = require("mongoose");
 const dbConfig = require("../app/core/config/db.config");
 const router = express.Router();
+var morgan = require('morgan')
 
 //cors policy
 app.use(function (req, res, next) {
@@ -13,6 +14,7 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   next();
 });
+app.use(morgan('tiny'));
 //const PORT = process.env.PORT || 3000;
 app.listen(process.env.PORT || 3000, function () {
   console.log("server has been started");

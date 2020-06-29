@@ -11,21 +11,23 @@ const topicModel = require("../../../models/school/course/topic.model");
 // Create and Save a new course
 exports.saveCourse = async (req, res) => {
   const courseQuery = {};
-  courseQuery.name = req.body.CourseName;
-  courseQuery.description = req.body.Description;
-  courseQuery.subject = req.body.Subject;
-  courseQuery.user = req.body.UserId;
-  courseQuery.school = req.body.School;
-  courseQuery.curriculum = req.body.Curriculum;
-  courseQuery.availability_from = req.body.AvailabilityFrom;
-  courseQuery.availability_to = req.body.AvailabilityTo;
+  courseQuery.name = req.body.courseName;
+  courseQuery.description = req.body.description;
+  courseQuery.subject = req.body.subject;
+  courseQuery.user = req.body.userId;
+  courseQuery.school = req.body.school;
+  courseQuery.curriculum = req.body.curriculum;
+  courseQuery.availability_from = req.body.availableFrom;
+  courseQuery.availability_to = req.body.availableTo;
   courseQuery.created_date = new Date();
   courseQuery.updated_date = new Date();
-  courseQuery.is_repeat_yearly = req.body.IsRepeatYearly;
+  courseQuery.is_repeat_yearly = req.body.repeatYearly;
   try {
     const result = await courseModel.create(courseQuery);
-    const sections = await saveSections(req.body.Sections);
-    await courseModel.update({ _id: result._id }, { sections });
+    for(var i=0;i <req.body.sections.length; i++){
+      const sections = await saveSections(req.body.sections[i].section);
+      await courseModel.update({ _id: result._id }, { sections });
+    } 
     res.send({ message: "Course saved successfully!" });
   } catch (error) {
     console.log("error:", error);
@@ -40,12 +42,12 @@ async function saveSections(sections) {
   let sectionResults = [];
   for (let index = 0; index < sections.length; index++) {
     const sectionQuery = {};
-    sectionQuery.section_name = sections[index].SectionName;
+    sectionQuery.section_name = sections[index].sectionName;
     sectionQuery.updated_date = new Date();
     sectionQuery.created_date = new Date();
     const result = await sectionModel.create(sectionQuery);
     sectionResults.push(result._id);
-    const chapters = await saveChapters(sections[index].Chapter);
+    const chapters = await saveChapters(sections[index].chapter);
     await sectionModel.update({ _id: result._id }, { chapters });
   }
   return sectionResults;
@@ -54,12 +56,12 @@ async function saveChapters(chapters) {
   let chapterResults = [];
   for (let index = 0; index < chapters.length; index++) {
     const chapterQuery = {};
-    chapterQuery.chapter_name = chapters[index].ChapterName;
+    chapterQuery.chapter_name = chapters[index].chapterName;
     chapterQuery.updated_date = new Date();
     chapterQuery.created_date = new Date();
     const result = await chapterModel.create(chapterQuery);
     chapterResults.push(result._id);
-    const topics = await saveTopics(chapters[index].Topics);
+    const topics = await saveTopics(chapters[index].topic);
     await chapterModel.update({ _id: result._id }, { topics });
   }
   return chapterResults;
@@ -68,8 +70,8 @@ async function saveTopics(topics) {
   let topicResults = [];
   for (let index = 0; index < topics.length; index++) {
     const topicQuery = {};
-    topicQuery.topic_name = topics[index].TopicName;
-    topicQuery.paragraph = topics[index].Paragraph;
+    topicQuery.topic_name = topics[index].topicName;
+    topicQuery.paragraph = topics[index].paragraph;
     topicQuery.updated_date = new Date();
     topicQuery.created_date = new Date();
     const result = await topicModel.create(topicQuery);
@@ -109,7 +111,23 @@ exports.findCourseById = async (req, res) => {
 
 exports.findCourses = async (req, res) => {
   try {
-    const result = await courseModel.find({ is_deleted: false });
+    const result = await courseModel.find({ is_deleted: false,  })
+    .sort({'created_date': -1})
+    .populate({
+      path: "sections",
+      model: "Sections",
+      match: { is_deleted: false },
+      populate: {
+        path: "chapters",
+        model: "Chapters",
+        match: { is_deleted: false },
+        populate: {
+          path: "topics",
+          model: "Topics",
+          match: { is_deleted: false },
+        },
+      },
+    });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
