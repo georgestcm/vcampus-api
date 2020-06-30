@@ -13,11 +13,11 @@ const topicSchema = new schema({
   },
   paragraph: [
     {
-      description: {
+      paragraphName: {
         type: String,
         default: null,
       },
-      document: {
+      supportingDocs: {
         type: String,
         default: null,
       },
