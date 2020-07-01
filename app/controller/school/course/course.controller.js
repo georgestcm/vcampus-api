@@ -26,7 +26,8 @@ exports.saveCourse = async (req, res) => {
     const result = await courseModel.create(courseQuery);
     for(var i=0;i <req.body.sections.length; i++){
       const sections = await saveSections(req.body.sections[i].section);
-      await courseModel.update({ _id: result._id }, { sections });
+      // await courseModel.update({ _id: result._id }, {  sections });
+      await courseModel.update({ _id: result._id }, { $push: {sections:sections }});//, {  sections });
     } 
     res.send({ message: "Course saved successfully!" });
   } catch (error) {
@@ -48,7 +49,7 @@ async function saveSections(sections) {
     const result = await sectionModel.create(sectionQuery);
     sectionResults.push(result._id);
     const chapters = await saveChapters(sections[index].chapter);
-    await sectionModel.update({ _id: result._id }, { chapters });
+    await sectionModel.update({ _id: result._id }, {$push: { chapters: chapters }});
   }
   return sectionResults;
 }
@@ -62,7 +63,7 @@ async function saveChapters(chapters) {
     const result = await chapterModel.create(chapterQuery);
     chapterResults.push(result._id);
     const topics = await saveTopics(chapters[index].topic);
-    await chapterModel.update({ _id: result._id }, { topics });
+    await chapterModel.update({ _id: result._id }, { $push: { topics: topics }});
   }
   return chapterResults;
 }
