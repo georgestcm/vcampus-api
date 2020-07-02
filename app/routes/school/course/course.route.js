@@ -8,5 +8,6 @@ router.get("/course/get/:courseId", course.findCourseById);
 router.get("/course/getall", course.findCourses);
 router.put("/course/update/:courseId", course.updateCourse);
 router.delete("/course/delete/:courseId", course.deleteCourse);
+router.post("/course/uploadDocs", course.uploadDocs);
 
 module.exports = router;

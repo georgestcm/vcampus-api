@@ -7,6 +7,21 @@ const courseModel = require("../../../models/school/course/course.model");
 const sectionModel = require("../../../models/school/course/section.model");
 const chapterModel = require("../../../models/school/course/chapter.model");
 const topicModel = require("../../../models/school/course/topic.model");
+var multer = require('multer');
+var DIR = './uploads/';
+var fs =require ("fs");
+//var upload = multer({dest: DIR}).single('file');
+
+let storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, DIR);
+  },
+  filename: (req, file, cb) => {
+    console.log(file.mimetype);
+    cb(null, file.fieldname + '-' + Date.now() + '.png');
+  }
+});
+let upload = multer({storage: storage}).single('file');
 
 // Create and Save a new course
 exports.saveCourse = async (req, res) => {
@@ -26,7 +41,6 @@ exports.saveCourse = async (req, res) => {
     const result = await courseModel.create(courseQuery);
     for(var i=0;i <req.body.sections.length; i++){
       const sections = await saveSections(req.body.sections[i].section);
-      // await courseModel.update({ _id: result._id }, {  sections });
       await courseModel.update({ _id: result._id }, { $push: {sections:sections }});//, {  sections });
     } 
     res.send({ message: "Course saved successfully!" });
@@ -157,22 +171,23 @@ exports.deleteCourse = async (req, res) => {
 
 exports.updateCourse = async (req, res) => {
   const courseQuery = {};
-  courseQuery.name = req.body.CourseName;
-  courseQuery.description = req.body.Description;
-  courseQuery.subject = req.body.Subject;
-  courseQuery.user = req.body.UserId;
-  courseQuery.school = req.body.School;
-  courseQuery.curriculum = req.body.Curriculum;
-  courseQuery.availability_from = req.body.AvailabilityFrom;
-  courseQuery.availability_to = req.body.AvailabilityTo;
+  courseQuery.name = req.body.courseName;
+  courseQuery.description = req.body.description;
+  courseQuery.subject = req.body.subject;
+  courseQuery.user = req.body.userId;
+  courseQuery.school = req.body.school;
+  courseQuery.curriculum = req.body.curriculum;
+  courseQuery.availability_from = req.body.availableFrom;
+  courseQuery.availability_to = req.body.availableTo;
+  courseQuery.is_repeat_yearly = req.body.repeatYearly;
   courseQuery.updated_date = new Date();
   courseQuery.is_repeat_yearly = req.body.IsRepeatYearly;
   try {
     await courseModel.update({ _id: req.params.courseId }, courseQuery);
-    const sections = await updateSections(
-      req.body.Sections,
-      req.params.courseId
-    );
+    // const sections = await updateSections(
+    //   req.body.Sections,
+    //   req.params.courseId
+    // );
     res.send({ message: "Course updated successfully!" });
   } catch (error) {
     console.log("error:", error);
@@ -264,4 +279,28 @@ async function updateTopics(topics, chapterId) {
     }
   }
   return true;
+}
+//our file upload function.
+exports.uploadDocs = async (req, res, next) => {
+    var path = '';
+    upload(req, res, function (err) {
+       if (err) {
+         console.log(err);
+         return res.status(422).send("an Error occured")
+       }  
+       path = req.file.path;
+       var newImg = fs.readFileSync(req.file.path);
+        // encode the file as a base64 string.
+        var encImg = newImg.toString('base64');
+       var newItem = {
+        description: "req.body.description",
+        contentType: req.file.mimetype,
+        size: req.file.size,
+        img: Buffer(encImg, 'base64')
+     };
+     
+       return res.send("Upload Completed for "+path); 
+  });     
+ // })
+  
 }
