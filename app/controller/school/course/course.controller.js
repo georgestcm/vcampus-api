@@ -8,8 +8,9 @@ const sectionModel = require("../../../models/school/course/section.model");
 const chapterModel = require("../../../models/school/course/chapter.model");
 const topicModel = require("../../../models/school/course/topic.model");
 var multer = require('multer');
-var DIR = './uploads/';
+var DIR = './public/uploads/';
 var fs =require ("fs");
+const { update } = require("../../../models/school/course/course.model");
 //var upload = multer({dest: DIR}).single('file');
 
 let storage = multer.diskStorage({
@@ -18,10 +19,11 @@ let storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     console.log(file.mimetype);
-    cb(null, file.fieldname + '-' + Date.now() + '.png');
+    var extension = file.originalname.split('.')[1];
+    cb(null, file.fieldname + '-' + Date.now()+"."+extension);
   }
 });
-let upload = multer({storage: storage}).single('file');
+let upload = multer({storage: storage}).single('file');//.array("supporingDocs[]", 12);//.single('file');
 
 // Create and Save a new course
 exports.saveCourse = async (req, res) => {
@@ -43,7 +45,7 @@ exports.saveCourse = async (req, res) => {
       const sections = await saveSections(req.body.sections[i].section);
       await courseModel.update({ _id: result._id }, { $push: {sections:sections }});//, {  sections });
     } 
-    res.send({ message: "Course saved successfully!" });
+    res.send({ message: "Course saved successfully!", _id :result._id });
   } catch (error) {
     console.log("error:", error);
     res.send({
@@ -281,26 +283,29 @@ async function updateTopics(topics, chapterId) {
   return true;
 }
 //our file upload function.
-exports.uploadDocs = async (req, res, next) => {
+
+exports.uploadDocs =  async (req, res, next) => {
     var path = '';
+    //const resultUpdate =  updateDocs("5efcca5f44d125213cae5d66", "5efcca5f44d125213cae5d67", "fileName");
+  //console.log(resultUpdate);
     upload(req, res, function (err) {
        if (err) {
          console.log(err);
          return res.status(422).send("an Error occured")
        }  
+       //console.log(req.body.paragraphId);
+       console.log(req.body.topicId);
+       var fileName = req.file.filename;
+       const resultUpdate =  updateDocs(req.body.topicId, req.body.paragraphId, fileName);
+       console.log(resultUpdate);
        path = req.file.path;
-       var newImg = fs.readFileSync(req.file.path);
-        // encode the file as a base64 string.
-        var encImg = newImg.toString('base64');
-       var newItem = {
-        description: "req.body.description",
-        contentType: req.file.mimetype,
-        size: req.file.size,
-        img: Buffer(encImg, 'base64')
-     };
      
        return res.send("Upload Completed for "+path); 
   });     
  // })
-  
+
+ async function updateDocs(topicId, paragraphId, fileName){
+   await topicModel.update({_id : topicId, "paragraph._id":paragraphId},
+    {$set :{"paragraph.$.supportingDocs":fileName}});
+ }
 }
