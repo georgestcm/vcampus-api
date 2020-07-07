@@ -36,7 +36,8 @@ exports.saveRegisterDetail = (req,res)=>{
                         subject: registerUser._id
                       }
                       let token = jwt.sign(payload,"secretKey")
-                      res.status(200).send({token,registerUser})
+                      // res.status(200).send({token,registerUser})
+                      res.status(200).send({success : true, message : `username ${registerUser.username} has been added with default password.`})
                     }
                   })
                 });
