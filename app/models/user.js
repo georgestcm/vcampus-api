@@ -74,7 +74,7 @@ school:{
     }
   }]
 },
-teacher:{
+teacherInSchool:{
   schools:[{
     _id:{
       type:String,

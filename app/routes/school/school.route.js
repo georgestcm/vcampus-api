@@ -3,7 +3,8 @@ var router = express.Router();
 
 
 var SchoolData = require('../../controller/school/school.controller');
-router.post('', SchoolData.saveSchoolDetail);
+router.post('/save_school_data', SchoolData.saveSchoolDetail);
+router.get('/get_schools_by_teacherId',SchoolData.getAllSchoolByTeacherId);
 
 
 

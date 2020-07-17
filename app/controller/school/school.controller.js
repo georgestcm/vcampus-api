@@ -49,3 +49,17 @@ exports.saveSchoolDetail = (req,res)=>{
     })
    
    };
+
+   exports.getAllSchoolByTeacherId = async (req,res)=>{
+    var teacherId = req.query.teacherId;
+     try {
+       const result = await User.find({ roles: { "$in": 3}, "school.teacher._id": { "$in": teacherId}});
+       res.send(result);
+     } catch (error) {
+       console.log("error:", error);
+       res.send({
+         message: "Error retrieving schools.",
+         error,
+       });
+     }
+    };

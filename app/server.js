@@ -69,11 +69,11 @@ app.use("/api/register_school_login", schoolLogin);
 
 //for add school teacher
 const schoolTeacher = require("./routes/school/teacher/teacher.route");
-app.use("/api/create_new_teacher", schoolTeacher);
+app.use("/api", schoolTeacher);
 
 //for add school
 const school = require("./routes/school/school.route");
-app.use("/api/save_school_data", school);
+app.use("/api", school);
 
 //add-update-get-delete course
 const course = require("./routes/school/course/course.route");
