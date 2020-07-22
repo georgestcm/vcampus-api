@@ -10,8 +10,43 @@ const topicModel = require("../../../models/school/course/topic.model");
 var multer = require('multer');
 var DIR = './public/uploads/';
 var fs =require ("fs");
+const GridFsStorage = require("multer-gridfs-storage");
+const Grid = require('gridfs-stream');
+//const methodOverride = require('method-override');
+const dbConfig = require("../../../../app/core/config/db.config");
+const crypto = require('crypto');
+const path = require('path');
+
 const { update } = require("../../../models/school/course/course.model");
 //var upload = multer({dest: DIR}).single('file');
+//app.use(methodOverrid("_method"))
+
+const connn = mongoose.createConnection(dbConfig.url);
+let gfs;
+connn.once('open',() =>{
+gfs = Grid(connn.db,mongoose.mongo);
+gfs.collection('uploads');
+})
+
+var Storage = new GridFsStorage({
+  url: dbConfig.url,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString('hex') + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: 'uploads'
+        };
+        resolve(fileInfo);
+      });
+    });
+  }
+});
+//const upload = multer({ storage });
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -23,7 +58,10 @@ let storage = multer.diskStorage({
     cb(null, file.fieldname + '-' + Date.now()+"."+extension);
   }
 });
-let upload = multer({storage: storage}).single('file');//.array("supporingDocs[]", 12);//.single('file');
+
+
+
+let upload = multer({storage: Storage}).single('file');//.array("supporingDocs[]", 12);//.single('file');
 
 // Create and Save a new course
 exports.saveCourse = async (req, res) => {
@@ -283,11 +321,24 @@ async function updateTopics(topics, chapterId) {
   return true;
 }
 //our file upload function.
+exports.readDocs =   (req, res) => {
+  console.log("req");
+  gfs.files.findOne({ filename : req.params.filename}, (err,file) =>{
+   if( !file || file.length ===0){
+     return res.status(404).json({error : "File not found!"});
+   }
+   else if(err){
+     return res.status(404).json({error : err});
+   }
+   else{
+     const readstream = gfs.createReadStream(file.filename);
+     readstream.pipe(res);
+   }
+  });
+
+};
 
 exports.uploadDocs =  async (req, res, next) => {
-    var path = '';
-    //const resultUpdate =  updateDocs("5efcca5f44d125213cae5d66", "5efcca5f44d125213cae5d67", "fileName");
-  //console.log(resultUpdate);
     upload(req, res, function (err) {
        if (err) {
          console.log(err);
@@ -298,14 +349,15 @@ exports.uploadDocs =  async (req, res, next) => {
        var fileName = req.file.filename;
        const resultUpdate =  updateDocs(req.body.topicId, req.body.paragraphId, fileName);
        console.log(resultUpdate);
-       path = req.file.path;
+       //path = req.file.path;
      
-       return res.send("Upload Completed for "+path); 
+       return res.send("Upload completed "+fileName); 
   });     
  // })
 
  async function updateDocs(topicId, paragraphId, fileName){
    await topicModel.update({_id : topicId, "paragraph._id":paragraphId},
     {$set :{"paragraph.$.supportingDocs":fileName}});
- }
+ } 
 }
+
