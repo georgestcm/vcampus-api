@@ -16,9 +16,9 @@ app.use(function (req, res, next) {
 });
 app.use(morgan('tiny'));
 app.use(express.static('public'));
-//const PORT = process.env.PORT || 3000;
-app.listen(process.env.PORT || 3000, function () {
-  console.log("server has been started");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, function () {
+  console.log("server has been started at "+PORT);
 });
 
 app.use(bodyParser.json());
