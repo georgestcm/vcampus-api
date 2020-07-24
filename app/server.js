@@ -99,3 +99,6 @@ app.use("/api", group);
 const groupmember = require("./routes/chat/Group/groupmember.route");
 app.use("/api", groupmember);
 
+//add-update-get-delete course
+const courseCode = require("./routes/school/course/courseCode.route");
+app.use("/api", courseCode);

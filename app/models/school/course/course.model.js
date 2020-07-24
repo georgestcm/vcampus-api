@@ -22,16 +22,16 @@ const coureSchema = new schema({
     type: String,
   },
   school: {
-    type: String,
-  },
+    type: String
+},
   curriculum: {
     type: String,
   },
   availability_from: {
-    type: String,
+    type: Date,
   },
   availability_to: {
-    type: String,
+    type: Date,
   },
   is_repeat_yearly: {
     type: Boolean,
