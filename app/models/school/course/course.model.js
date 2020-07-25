@@ -50,7 +50,13 @@ const coureSchema = new schema({
     type: Boolean,
     default: false,
   },
- 
+  codes: [
+     {type : String}
+    // {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "CourseCodes",
+    // },
+  ] 
 });
 
 module.exports = mongoose.model("Courses", coureSchema, "Courses");

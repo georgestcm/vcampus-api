@@ -10,5 +10,7 @@ router.put("/course/update/:courseId", course.updateCourse);
 router.delete("/course/delete/:courseId", course.deleteCourse);
 router.post("/course/uploadDocs", course.uploadDocs);
 router.get("/course/readFile/:filename", course.readDocs);
+router.put("/course/addCode",course.addCodeToCourse);
+router.get("/course/getCoursesByCode/:code",course.findCoursesByCode);
 
 module.exports = router;

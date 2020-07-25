@@ -16,7 +16,7 @@ const Grid = require('gridfs-stream');
 const dbConfig = require("../../../../app/core/config/db.config");
 const crypto = require('crypto');
 const path = require('path');
-
+const courseCodeModel = require("../../../models/school/course/courseCode.model");
 const { update } = require("../../../models/school/course/course.model");
 //var upload = multer({dest: DIR}).single('file');
 //app.use(methodOverrid("_method"))
@@ -237,6 +237,55 @@ exports.updateCourse = async (req, res) => {
     });
   }
 };
+
+exports.addCodeToCourse = async (req, res) => {
+  
+  try {
+    await courseModel.update({ _id: req.body.courseId }, {$addToSet: { codes: req.body.code }, updated_date : new Date()});
+    res.status(200).json({ message: "Code added successfully!", success : true });
+  } catch (error) {
+    console.log("error:", error);
+    res.status(405).json({
+      message: "Error adding course code.",
+      error,
+      success : false
+    });
+  }
+};
+
+exports.findCoursesByCode = async (req, res) => {
+  try {
+    const courseResult = await courseCodeModel.find({courseCode : req.params.code, courseCodeValidTo : { $gte: new Date() }, isDeleted : false, isActive : true})
+    if(courseResult && courseResult.length==0){      
+      res.status(405).json({message : "Course not found with code :"+req.params.code});
+    }
+    const result = await courseModel.find({ is_deleted: false, codes :{"$in" :req.params.code}  })
+    .sort({'created_date': -1})
+    .populate({
+      path: "sections",
+      model: "Sections",
+      match: { is_deleted: false },
+      populate: {
+        path: "chapters",
+        model: "Chapters",
+        match: { is_deleted: false },
+        populate: {
+          path: "topics",
+          model: "Topics",
+          match: { is_deleted: false },
+        },
+      },
+    });
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error retrieving courses",
+      error,
+    });
+  }
+};
+
 
 async function updateSections(sections, courseId) {
   for (let index = 0; index < sections.length; index++) {
