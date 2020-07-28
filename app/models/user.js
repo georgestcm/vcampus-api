@@ -37,6 +37,10 @@ const userSchema = new schema({
     type: Number
 }],
 school:{
+  _schoolId: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: function () { return new mongoose.Types.ObjectId}
+},
   school_name:{
     type:String,
     default:null

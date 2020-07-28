@@ -193,6 +193,35 @@ exports.findCourses = async (req, res) => {
   }
 };
 
+exports.findCoursesBySchoolId = async (req, res) => {
+  try {
+    const result = await courseModel.find({ is_deleted: false, school : req.params.schoolId  })
+    .sort({'created_date': -1})
+    .populate({
+      path: "sections",
+      model: "Sections",
+      match: { is_deleted: false },
+      populate: {
+        path: "chapters",
+        model: "Chapters",
+        match: { is_deleted: false },
+        populate: {
+          path: "topics",
+          model: "Topics",
+          match: { is_deleted: false },
+        },
+      },
+    });
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error retrieving courses",
+      error,
+    });
+  }
+};
+
 exports.deleteCourse = async (req, res) => {
   try {
     const result = await courseModel.update(

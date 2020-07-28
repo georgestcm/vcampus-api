@@ -21,9 +21,13 @@ const coureSchema = new schema({
   subject: {
     type: String,
   },
-  school: {
-    type: String
-},
+//   school: {
+//     type: String
+// },
+school:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "schools",
+    },
   curriculum: {
     type: String,
   },
