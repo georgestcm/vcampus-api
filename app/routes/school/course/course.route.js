@@ -13,5 +13,6 @@ router.get("/course/readFile/:filename", course.readDocs);
 router.put("/course/addCode",course.addCodeToCourse);
 router.get("/course/getCoursesByCode/:code",course.findCoursesByCode);
 router.get("/course/getCoursesBySchoolId/:schoolId",course.findCoursesBySchoolId);
+router.get("/course/findMediaByUserId/:userId",course.findMediaByUserId);
 
 module.exports = router;

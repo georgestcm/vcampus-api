@@ -18,6 +18,7 @@ const crypto = require('crypto');
 const path = require('path');
 const courseCodeModel = require("../../../models/school/course/courseCode.model");
 const { update } = require("../../../models/school/course/course.model");
+const mediaModel = require("../../../models/school/course/media.model");
 //var upload = multer({dest: DIR}).single('file');
 //app.use(methodOverrid("_method"))
 
@@ -316,6 +317,18 @@ exports.findCoursesByCode = async (req, res) => {
 };
 
 
+exports.findMediaByUserId = async (req, res) => {
+  try {
+    const result = await mediaModel.find({user : req.params.userId})
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error retrieving Media ",
+      error,
+    });
+  }
+};
 async function updateSections(sections, courseId) {
   for (let index = 0; index < sections.length; index++) {
     const sectionQuery = {};
@@ -422,14 +435,15 @@ exports.uploadDocs =  async (req, res, next) => {
          console.log(err);
          return res.status(422).send("an Error occured")
        }  
-       //console.log(req.body.paragraphId);
-       console.log(req.body.topicId);
+       console.log(req.body.title);
+       //console.log(req.body.topicId);
        var fileName = req.file.filename;
-       const resultUpdate =  updateDocs(req.body.topicId, req.body.paragraphId, fileName);
-       console.log(resultUpdate);
-       //path = req.file.path;
-     
-       return res.send("Upload completed "+fileName); 
+       const result =  createMedia(req.body.userId, req.body.title, fileName);
+       //const resultUpdate =  updateDocs(req.body.topicId, req.body.paragraphId, fileName);
+       console.log(result);
+       //path = req.file.path;  
+       res.send(fileName);   
+      // return res.status(200).json({"uploaded":true, "fileName":fileName}); 
   });     
  // })
 
@@ -437,5 +451,14 @@ exports.uploadDocs =  async (req, res, next) => {
    await topicModel.update({_id : topicId, "paragraph._id":paragraphId},
     {$set :{"paragraph.$.supportingDocs":fileName}});
  } 
+
+ async function createMedia(userId, title, fileName){
+   const query ={
+       user : userId,
+       title : title,
+       fileName : fileName
+   };
+  await mediaModel.create(query);
+} 
 }
 
