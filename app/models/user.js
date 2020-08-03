@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { ObjectID } = require('mongoose/lib/schema/index');
 const schema = mongoose.Schema;
 
 
@@ -85,6 +86,9 @@ teacherInSchool:{
       default:null
     }
   }]
+},
+school_id :{
+  type : mongoose.Schema.Types.ObjectId
 }
 
 })

@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const User = require('../../models/user')
 const bcrypt = require('bcrypt');
+const { isNull } = require('underscore');
 const saltRounds = 10;
 
 // Create and Save a new Note
@@ -63,3 +64,18 @@ exports.saveSchoolDetail = (req,res)=>{
        });
      }
     };
+
+    exports.getAllSchool = async (req,res)=>{
+       try {
+         const result = await User.find({ roles: { "$in": 3}})
+         .select("_id school.school_name");
+         const data = result.filter(a=>a.school.school_name != null);
+         res.send(data);
+       } catch (error) {
+         console.log("error:", error);
+         res.send({
+           message: "Error retrieving schools.",
+           error,
+         });
+       }
+      };
