@@ -79,3 +79,32 @@ exports.saveSchoolDetail = (req,res)=>{
          });
        }
       };
+
+      exports.getAllSchoolForAdmin = async (req,res)=>{
+        try {
+          const result = await User.find({ roles: { "$in": 3}})
+          .select("_id username first_name last_name email phone_number profile_photo teacher school");
+          const data = result.filter(a=>a.school.school_name != null);
+          res.send(data);
+        } catch (error) {
+          console.log("error:", error);
+          res.send({
+            message: "Error retrieving schools.",
+            error,
+          });
+        }
+       };
+
+       exports.getAllStudents = async (req,res)=>{
+        try {
+          const result = await User.find({ roles: { "$in": 6}, school_id : req.params.schoolId })
+          .select("_id username first_name last_name email phone_number profile_photo ");          
+          res.send(result);
+        } catch (error) {
+          console.log("error:", error);
+          res.send({
+            message: "Error retrieving students.",
+            error,
+          });
+        }
+       };
