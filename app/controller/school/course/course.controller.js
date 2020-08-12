@@ -167,7 +167,7 @@ exports.findCourseById = async (req, res) => {
 
 exports.findCourses = async (req, res) => {
   try {
-    const result = await courseModel.find({ is_deleted: false,  })
+    const result = await courseModel.find({ is_deleted: false, school :{ $exists: true } })
     .sort({'created_date': -1})
     .populate({
       path: "sections",
