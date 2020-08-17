@@ -83,6 +83,19 @@ exports.saveTeacherDetail = (req,res)=>{
     }
   }
 
+  exports.getAllTeacherForAdmin = async (req,res)=>{
+     try {
+       const result = await User.find({ roles: { "$in": 5} });
+       res.send(result);
+     } catch (error) {
+       console.log("error:", error);
+       res.send({
+         message: "Error retrieving teachers.",
+         error,
+       });
+     }
+   }
+
   exports.addTeacherToSchool = async (req,res) =>{
     var teacherId = req.body.teacherId;
     var schoolId = req.body.schoolId;
