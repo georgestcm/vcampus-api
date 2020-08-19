@@ -108,3 +108,25 @@ exports.saveSchoolDetail = (req,res)=>{
           });
         }
        };
+
+       exports.updateSchoolDetail = (req,res)=>{
+        try {
+        const query=  {school: {
+            school_name:req.body.school_name,
+            principal_first_name:req.body.principal_first_name,
+            principal_last_name: req.body.principal_last_name,
+            description:req.body.description
+          }};
+          
+          User.findByIdAndUpdate(req.body._id, query,function(err, school){
+            if(err){
+              res.status(405).send({msg:error, success : false})
+            }else{
+              res.status(200).send({msg:"School updated!", success : true})
+            }
+          });
+          
+        } catch (error) {
+          res.status(405).send({msg:error})
+        }
+        };

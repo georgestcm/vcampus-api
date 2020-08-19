@@ -139,7 +139,6 @@ exports.saveTeacherDetail = (req,res)=>{
 
   exports.updateTeacherDetail = (req,res)=>{
     try {
-      let dataTeacher = req.body;
       User.findByIdAndUpdate(req.body._id, req.body,function(err, teacher){
         if(err){
           res.status(405).send({msg:error, success : false})
