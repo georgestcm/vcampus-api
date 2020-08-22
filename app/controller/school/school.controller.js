@@ -130,3 +130,47 @@ exports.saveSchoolDetail = (req,res)=>{
           res.status(405).send({msg:error})
         }
         };
+
+         exports.getAllAdminStaff = async (req,res)=>{
+          try {
+            const result = await User.find({ roles: { "$in": 2} });
+            res.send(result);
+          } catch (error) {
+            console.log("error:", error);
+            res.send({
+              message: "Error retrieving Admin Staff.",
+              error,
+            });
+          }
+        }
+
+        exports.updateStaffDetail = (req,res)=>{
+          try {
+            User.findByIdAndUpdate(req.body._id, req.body,function(err, staff){
+              if(err){
+                res.status(405).send({msg:error, success : false})
+              }else{
+                res.status(200).send({msg:"Staff updated!", success : true})
+              }
+            });
+            
+          } catch (error) {
+            res.status(405).send({msg:error})
+          }
+          };
+
+          exports.deleteUserPermanent = (req,res)=>{
+            try {
+              console.log("deleteUserPermanent");
+              User.findByIdAndDelete(req.params.id, function(err, user){
+                if(err){
+                  res.status(405).send({msg:error, success : false})
+                }else{
+                  res.status(200).send({msg:"User deleted!", success : true})
+                }
+              });
+              
+            } catch (error) {
+              res.status(405).send({msg:error})
+            }
+            }; 
