@@ -11,4 +11,5 @@ router.put('/updateSchoolDetail',SchoolData.updateSchoolDetail);
 router.get('/getAllAdminStaff',SchoolData.getAllAdminStaff);
 router.put('/updateStaffDetail',SchoolData.updateStaffDetail);
 router.delete('/deleteUserPermanent/:id',SchoolData.deleteUserPermanent);
+router.get('/student_list',SchoolData.studentList);
 module.exports = router;

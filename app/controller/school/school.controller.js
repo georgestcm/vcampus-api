@@ -109,6 +109,19 @@ exports.saveSchoolDetail = (req,res)=>{
         }
        };
 
+       exports.studentList = async (req,res)=>{//Using for chat
+        try {
+          const result = await User.find({ roles: { "$in": 6} })
+          .select("_id username first_name last_name email phone_number profile_photo ");          
+          res.send(result);
+        } catch (error) {
+          console.log("error:", error);
+          res.send({
+            message: "Error retrieving students.",
+            error,
+          });
+        }
+       };
        exports.updateSchoolDetail = (req,res)=>{
         try {
         const query=  {school: {

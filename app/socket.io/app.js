@@ -23,10 +23,16 @@ app.get("/", (req, res) => {
 const chatModel = require("../models/chat/chat.model");
 const  connect  = require("./db");
 
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
 io.sockets.on('connection', async (socket) => { 
 try{
+  console.log("connected!");
       socket.on('username',  (username) => {      
         socket.username = username;
+        console.log(socket.username);
         io.emit('is_online',  + socket.username + ' join the chat..</i>');
     });
       socket.on('disconnect',  (username) => {
