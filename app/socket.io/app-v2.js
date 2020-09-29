@@ -10,16 +10,24 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     console.log('a user connected');
 
-    socket.broadcast.emit('hi');
+    //socket.broadcast.emit('hi');
     
-    socket.on('send message', (msg) => {
-        console.log('message: ' + msg);
+    // socket.on('send message', (msg) => {
+    //     console.log('message: ' + msg);
+    //     io.emit('chat-message',{message : msg, createdAt : new Date()})
+    //   });
+
+      socket.on('send-message', (message)=>{
+        console.log(message);
+        io.emit('message',{ msg : message.text, user : socket.username, createdOn : new Date()})
+        //io.sockets.in('user1@example.com').emit('new_msg', {msg: 'hello'});
       });
 
       socket.on('set-name',  (username) => {      
         socket.username = username;
         console.log(socket.username);
-        io.emit('user-changed',{ username : username , event : 'joined'})
+        socket.join(username);
+        io.emit('user-changed',{ user : username , event : 'joined'})
         //io.emit('is_online',  + socket.username + ' join the chat..</i>');
     });
 
@@ -28,9 +36,7 @@ io.on('connection', (socket) => {
       io.emit('user-changed', {user : socket.username, event : 'left'})
     });
 
-    socket.on('send-message', (message)=>{
-      io.emit('message',{ msg : message.text, user : socket.username, createdOn : new Date()})
-    });
+    
 
   });
 
