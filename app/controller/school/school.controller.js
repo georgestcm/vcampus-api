@@ -167,7 +167,7 @@ exports.saveSchoolDetail = (req,res)=>{
               }
             });
             
-          } catch (error) {
+          } catch (error)   {
             res.status(405).send({msg:error})
           }
           };

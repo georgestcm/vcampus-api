@@ -102,3 +102,7 @@ app.use("/api", groupmember);
 //add-update-get-delete course
 const courseCode = require("./routes/school/course/courseCode.route");
 app.use("/api", courseCode);
+
+//Code Generator
+const codeGenerator = require("./routes/generator/generator.route");
+app.use("/api", codeGenerator);
