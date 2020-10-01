@@ -21,6 +21,13 @@ exports.generateCode = (req,res)=>{
             res.status(200).send({msg:'New Course Code has been added'})
         }
     });
-
-   // res.send("Created");
     };
+
+    exports.getAllCourseCode =async (req,res)=>{
+        try {
+            const result = await CourseCode.find();
+            res.send(result);
+        } catch (error) {
+            res.status(500).send({msg : 'Error getting course code'});
+        }
+    }
