@@ -20,6 +20,10 @@ const courseCodeSchema = new schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Courses",
   },
+  assignedToStudent: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  },
   createdAt: {
     type: Date,
     default: new Date(),
