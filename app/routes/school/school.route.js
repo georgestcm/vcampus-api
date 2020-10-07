@@ -12,4 +12,7 @@ router.get('/getAllAdminStaff',SchoolData.getAllAdminStaff);
 router.put('/updateStaffDetail',SchoolData.updateStaffDetail);
 router.delete('/deleteUserPermanent/:id',SchoolData.deleteUserPermanent);
 router.get('/student_list',SchoolData.studentList);
+router.post('/save_curriculam',SchoolData.saveCurriculam);
+router.get('/get_curriculam',SchoolData.getAllCurriculam);
+router.get('/get_curriculam_by_school/:schoolId',SchoolData.getAllCurriculamBySchoolId);
 module.exports = router;

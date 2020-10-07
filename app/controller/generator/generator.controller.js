@@ -5,9 +5,6 @@ const mongoose = require("mongoose");
 const User = require("../../models/user");
 const CourseCode = require("../../models/generator/courseCode.model");
 
-exports.test = (req, res) => {
-  res.send("OK");
-};
 
 exports.generateCode = (req, res) => {
   let reqData = req.body;
@@ -24,8 +21,8 @@ exports.generateCode = (req, res) => {
 exports.getAllCourseCode = async (req, res) => {
   try {
     const result = await CourseCode.find().populate({
-      path: "course",
-      model: "Courses",
+      path: "curriculam",
+      model: "Curriculums",
     });
     res.send(result);
   } catch (error) {
@@ -75,8 +72,8 @@ exports.getAllEnrolledCourse = async (req, res) => {
     const result = await CourseCode.find({
       assignedToStudent: req.params.studentId,
     }).populate({
-      path: "course",
-      model: "Courses",
+      path: "curriculam",
+      model: "Curriculums",
     });
     res.send(result);
   } catch (error) {
