@@ -8,6 +8,7 @@ const CourseCode = require("../../models/generator/courseCode.model");
 
 exports.generateCode = (req, res) => {
   let reqData = req.body;
+  console.log(reqData);
   let courseCode = new CourseCode(reqData);
   courseCode.save((err, docs) => {
     if (err) {
@@ -21,7 +22,7 @@ exports.generateCode = (req, res) => {
 exports.getAllCourseCode = async (req, res) => {
   try {
     const result = await CourseCode.find().populate({
-      path: "curriculam",
+      path: "curriculum",
       model: "Curriculums",
     });
     res.send(result);

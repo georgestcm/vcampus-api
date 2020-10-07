@@ -28,9 +28,10 @@ school:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "schools",
     },
-  curriculum: {
-    type: String,
-  },
+    curriculum: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Curriculums",
+    },
   availability_from: {
     type: Date,
   },

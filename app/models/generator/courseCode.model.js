@@ -16,9 +16,9 @@ const courseCodeSchema = new schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Schools",
   },
-  curriculam: {
+  curriculum: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Curriculum",
+    ref: "Curriculums",
   },
   assignedToStudent: {
     type: mongoose.Schema.Types.ObjectId,
