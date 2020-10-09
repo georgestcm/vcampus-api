@@ -60,7 +60,7 @@ exports.getAllSchoolByTeacherId = async (req, res) => {
     //const result = await User.find({ roles: { "$in": 3}, "school.teacher._id": { "$in": teacherId}});
     const result = await User.find({
       roles: { $in: 3 },
-      "teacherInSchool.schools._id": { $in: teacherId },
+      "school.teacher._id": { $in: teacherId },
     });
     res.send(result);
   } catch (error) {
