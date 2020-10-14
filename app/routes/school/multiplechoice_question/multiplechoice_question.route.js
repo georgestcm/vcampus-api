@@ -9,6 +9,7 @@ var question = require('../../../controller/school/multiplechoice_question/multi
  router.get('/get_question', question.findAll);
   router.put('/update_question/:questionId', question.updateQuestion);
   router.delete('/delete_question/:questionId', question.deleteQuestion);
+  router.get('/get_questions_by_school/:schoolId',question.findAllBySchoolId);
 
 module.exports = router;
 

@@ -9,17 +9,18 @@ const examModel = require("../../../models/school/course/exam.model");
 // Create and Save a new question
 exports.saveQuestion = async (req, res) => {
   
-    const questionQuery = {};
-    //questionQuery.user = req.body.UserId;
-    questionQuery.exam = req.body.ExamId;
-    questionQuery.Question_title = req.body.Question_title;
-    questionQuery.Question_options =  req.body.Question_options;
-    questionQuery.Correct_answer = req.body.Correct_answer; 
+    // const questionQuery = {};
+    // //questionQuery.user = req.body.UserId;
+    // questionQuery.exam = req.body.ExamId;
+    // questionQuery.Question_title = req.body.Question_title;
+    // questionQuery.Question_options =  req.body.Question_options;
+    // questionQuery.Correct_answer = req.body.Correct_answer; 
     
     try {
-      const result = await questionModel.create(questionQuery);
      
-      await examModel.update({ _id:req.body.ExamId },{ $push: { questions: result._id } }  );
+      const result = await questionModel.create(req.body);
+     
+      //await examModel.update({ _id:req.body.ExamId },{ $push: { questions: result._id } }  );
       res.send({ message: "Question saved successfully!" });
     } catch (error) {
       console.log("error", error);
@@ -53,6 +54,17 @@ exports.findOneQuestion = (req, res) => {
 // Retrieve and return all Questions from the database.
 exports.findAll = (req, res) => {
     questionModel.find( { Is_deleted: false })
+    .then(questions => {
+        res.send(questions);
+    }).catch(err => {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving Questions."
+        });
+    });
+  };
+
+  exports.findAllBySchoolId = (req, res) => {
+    questionModel.find( { Is_deleted: false, school : req.params.schoolId })
     .then(questions => {
         res.send(questions);
     }).catch(err => {
