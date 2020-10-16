@@ -6,17 +6,17 @@ const examModel = require("../../../models/school/course/exam.model");
 
 
 exports.saveExam = async (req, res) => {
-    const examQuery = {};
+    // const examQuery = {};
   
-    examQuery.Exam_Name = req.body.Exam_Name;
-    examQuery.Exam_Description = req.body.Exam_Description;
-    examQuery.Exam_StartDateTime = req.body.Exam_StartDateTime;
-    examQuery.Exam_EndDateTime = req.body.Exam_EndDateTime;
-    examQuery.Created_Date = new Date();
-    examQuery.Updated_Date = new Date();
+    // examQuery.Exam_Name = req.body.Exam_Name;
+    // examQuery.Exam_Description = req.body.Exam_Description;
+    // examQuery.Exam_StartDateTime = req.body.Exam_StartDateTime;
+    // examQuery.Exam_EndDateTime = req.body.Exam_EndDateTime;
+    // examQuery.Created_Date = new Date();
+    //examQuery.Updated_Date = new Date();
      try {
-      const result = await examModel.create(examQuery);
-      res.send({ message: "Exam Detail save successfully!" });
+       await examModel.create(req.body);
+      res.send({ message: "Exam Detail saved successfully!" });
     } catch (error) {
       console.log("error", error);
       res.send(error);
@@ -50,8 +50,8 @@ exports.findOneExam = (req, res) => {
 };
 
 // Retrieve and return all exams from the database.
-exports.findAll = (req, res) => {
-  examModel.find( { Is_deleted: false })
+exports.findAllBySchool = (req, res) => {
+  examModel.find( { Is_deleted: false, school: req.params.schoolId })
   .then(exams => {
       res.send(exams);
   }).catch(err => {

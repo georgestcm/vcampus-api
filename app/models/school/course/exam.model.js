@@ -3,23 +3,27 @@ const schema = mongoose.Schema;
 
 
 const examSchema = new schema({   
-    user: {
+    school: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"
       }, 
     course: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "courses"
+        ref: "Courses"
     },
-    questions:{
-        type: [mongoose.Schema.Types.ObjectId],
+    questions:[{
+        type: mongoose.Schema.Types.ObjectId,
         ref:"multichoice_question"
-        },       
+        }],       
     Exam_Name: {
         type: String,
         default: null
     },
     Exam_Description: {
+        type: String,
+        default: null
+    },
+    Exam_Type: {
         type: String,
         default: null
     },
@@ -37,7 +41,7 @@ const examSchema = new schema({
     },      
     Created_Date: {
         type: String,
-        default: null
+        default: new Date()
     },
     Updated_Date: {
         type: String,

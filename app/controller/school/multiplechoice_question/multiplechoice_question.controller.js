@@ -74,6 +74,16 @@ exports.findAll = (req, res) => {
     });
   };
 
+  exports.findAllByCourseAndType = (req, res) => {
+    questionModel.find( { Is_deleted: false, course : req.params.courseId, Question_for : req.params.type })
+    .then(questions => {
+        res.send(questions);
+    }).catch(err => {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving Questions."
+        });
+    });
+  };
   // Update a question identified by the questionId in the request
 exports.updateQuestion = (req, res) => {
     // Validate Request
