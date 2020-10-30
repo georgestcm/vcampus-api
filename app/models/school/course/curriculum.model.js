@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
 const CurriculumSchema = new schema({
-    curriculumName: {
+    curriculum: {
     type: String,
     required:true
   },
