@@ -51,7 +51,10 @@ exports.findOneExam = (req, res) => {
 
 // Retrieve and return all exams from the database.
 exports.findAllBySchool = (req, res) => {
-  examModel.find( { Is_deleted: false, school: req.params.schoolId })
+  examModel.find( { Is_deleted: false, school: req.params.schoolId }).populate({
+    path: "questions",
+    model: "multichoice_question",
+    match: { Is_deleted: false }})
   .then(exams => {
       res.send(exams);
   }).catch(err => {
@@ -63,12 +66,6 @@ exports.findAllBySchool = (req, res) => {
 
   // Update a exam identified by the examId in the request
 exports.updateExam = (req, res) => {
-    // Validate Request
-    if (!req.body.Exam_Name) {
-      return res.status(400).send({
-        message: "exam content can not be empty",
-      });
-    }
   
     // Find exam and update it with the request body
     examModel.findByIdAndUpdate(

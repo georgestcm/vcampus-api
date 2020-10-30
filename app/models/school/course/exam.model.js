@@ -14,7 +14,12 @@ const examSchema = new schema({
     questions:[{
         type: mongoose.Schema.Types.ObjectId,
         ref:"multichoice_question"
-        }],       
+        }],
+    student: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "users",
+            default : null
+          },     
     Exam_Name: {
         type: String,
         default: null
@@ -28,34 +33,45 @@ const examSchema = new schema({
         default: null
     },
     Exam_StartDateTime: {
-        type: String,
+        type: Date,
         default: null
     },
     Exam_EndDateTime: {
-        type: String,
+        type: Date,
         default: null
     }, 
-    Is_active: {
-        type: Boolean,
-        default: false
-    },      
-    Created_Date: {
+    Exam_Status :{
+        type : String,
+        default : 'Pending'
+    },
+    TotalQuestion: {
+        type: Number,
+        default: 0
+    },     
+    CorrectAnswer: {
+        type: Number,
+        default: 0
+    },
+    InCorrectAnswer: {
         type: String,
+        default: 0
+    },     
+    Created_Date: {
+        type: Date,
         default: new Date()
     },
     Updated_Date: {
-        type: String,
+        type: Date,
         default: null
     },
     Deleted_Date: {
-        type: String,
+        type: Date,
         default: null
     },
     Is_deleted: {
         type: Boolean,
         default: false
-    },
-    
+    }
          
     }
   )
