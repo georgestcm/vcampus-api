@@ -9,6 +9,7 @@ var exam = require('../../../controller/school/exam/exam.controller');
  router.get('/get_exam_by_school/:schoolId', exam.findAllBySchool);
  router.put('/update_exam/:examId', exam.updateExam);
  router.delete('/delete_exam/:examId', exam.deleteExam);
+ router.get('/get_exam_by_course/:courseId', exam.findAllByCourse);
 
 module.exports = router;
 

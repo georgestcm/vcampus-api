@@ -64,6 +64,20 @@ exports.findAllBySchool = (req, res) => {
   });
 };
 
+exports.findAllByCourse = (req, res) => {
+  examModel.find( { Is_deleted: false, course: req.params.courseId }).populate({
+    path: "questions",
+    model: "multichoice_question",
+    match: { Is_deleted: false }})
+  .then(exams => {
+      res.send(exams);
+  }).catch(err => {
+      res.status(500).send({
+          message: err.message || "Some error occurred while retrieving exams."
+      });
+  });
+};
+
   // Update a exam identified by the examId in the request
 exports.updateExam = (req, res) => {
   

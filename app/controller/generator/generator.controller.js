@@ -4,6 +4,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../../models/user");
 const CourseCode = require("../../models/generator/courseCode.model");
+const Courses = require("../../models/school/course/course.model")
 
 
 exports.generateCode = (req, res) => {
@@ -76,7 +77,12 @@ exports.getAllEnrolledCourse = async (req, res) => {
       path: "curriculam",
       model: "Curriculums",
     });
-    res.send(result);
+    let courseList =[]; 
+    for(let i=0; i<result.length; i++){
+      const course = await Courses.find({curriculum : result[i].curriculum, is_deleted : false });
+      courseList.push(course);
+    }
+    res.send(courseList.filter(a => a.length >0));
   } catch (error) {
     console.log(error);
     res.status(500).send({ msg: "Error getting courses" });
