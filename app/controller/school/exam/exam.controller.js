@@ -85,10 +85,11 @@ exports.updateExam = (req, res) => {
     examModel.findByIdAndUpdate(
       req.params.examId,      
       {
-        Exam_Name : req.body.Exam_Name,
-        Exam_Description : req.body.Exam_Description,
+        Exam_Status : req.body.Exam_Status,
+        TotalQuestion : req.body.TotalQuestion,
+        CorrectAnswer : req.body.CorrectAnswer,
         Exam_StartDateTime : req.body.Exam_StartDateTime,
-        Exam_EndDateTime : req.body.Exam_EndDateTime,
+        Exam_EndDateTime : new Date(),
         Updated_Date :new Date()       
       },
       { new: true },
