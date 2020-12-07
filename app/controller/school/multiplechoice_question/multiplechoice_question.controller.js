@@ -8,16 +8,8 @@ const examModel = require("../../../models/school/course/exam.model");
 
 // Create and Save a new question
 exports.saveQuestion = async (req, res) => {
-  
-    // const questionQuery = {};
-    // //questionQuery.user = req.body.UserId;
-    // questionQuery.exam = req.body.ExamId;
-    // questionQuery.Question_title = req.body.Question_title;
-    // questionQuery.Question_options =  req.body.Question_options;
-    // questionQuery.Correct_answer = req.body.Correct_answer; 
-    
-    try {
-     
+      
+    try {   
       const result = await questionModel.create(req.body);
      
       //await examModel.update({ _id:req.body.ExamId },{ $push: { questions: result._id } }  );
