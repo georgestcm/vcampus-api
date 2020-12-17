@@ -12,13 +12,13 @@ const multichoice_questionSchema = new schema({
   },
   Type: {
     type: String,
-    default: "Multi-choice",
+    default: "Multi-Choice",//Fill-The-Blanks|All-True|Poll
   },
   Question_title: {
     type: String,
     default: null,
   },
-  Question_for: { type: String, default: null },
+  Question_for: { type: String, default: null },//Quiz|Exam|Practice
   Question_options: [
     {
       optionid: {
@@ -28,13 +28,17 @@ const multichoice_questionSchema = new schema({
       option: {
         type: String,
         default: null,
-      },
+      }
     },
   ],
   Correct_answer: {
     type: Number,
     default: null,
   },
+  All_True :[{
+    type : Number,
+    default : null
+  }],
   Fill_The_Blanks: [
     {
       id: {
@@ -46,6 +50,22 @@ const multichoice_questionSchema = new schema({
         default: null,
       },
     },
+  ],
+  Poll :[
+    {
+      id: {
+      type: Number,
+      default: 0,
+    },
+    poll_option: {
+      type: String,
+      default: null,
+    },
+    poll_count :{
+      type : Number,
+      default : 0
+    }
+  }
   ],
   Is_deleted: {
     type: Boolean,
