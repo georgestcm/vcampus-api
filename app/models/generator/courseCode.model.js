@@ -39,6 +39,10 @@ const courseCodeSchema = new schema({
     type: Boolean,
     default: true,
   },
+  createdBy :{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+  }
 });
 
 module.exports = mongoose.model("CourseCodes", courseCodeSchema, "CourseCode");

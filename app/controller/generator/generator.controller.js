@@ -22,13 +22,14 @@ exports.generateCode = (req, res) => {
 
 exports.getAllCourseCode = async (req, res) => {
   try {
-    const result = await CourseCode.find().populate({
+    const result = await CourseCode.find({isDeleted : false}).populate([{
       path: "curriculum",
       model: "Curriculums",
-    });
+    },{path : 'createdBy',model : 'user'}]);
+
     res.send(result);
   } catch (error) {
-    res.status(500).send({ msg: "Error getting course code" });
+    res.status(500).send({ msg: "Error getting course code",err : error });
   }
 };
 

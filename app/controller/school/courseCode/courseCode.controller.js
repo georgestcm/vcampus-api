@@ -9,6 +9,7 @@ exports.saveCourseCode = async (req,res) =>{
     query.courseCodeValidFrom = req.body.courseCodeValidFrom;
     query.courseCodeValidTo = req.body.courseCodeValidTo;
     query.school = req.body.schoolId;
+    query.createdBy = req.body.createdBy;
     try 
     {
     const result = await courseCodeModel.create(query);
@@ -19,8 +20,13 @@ exports.saveCourseCode = async (req,res) =>{
     }
 }
 exports.getAllCourseCode = async (req, res) =>{
+    console.log('calling');
     try {
-        const result = await courseCodeModel.find({isDeleted : false});
+        const result = await courseCodeModel.find({isDeleted : false})
+        .populate({
+            path: "user",
+            model: "users",
+        });
         res.status(200).json(result);
     } catch (error) {
         return res.status(405).json({error : error});
