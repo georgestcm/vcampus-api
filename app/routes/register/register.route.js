@@ -3,7 +3,8 @@ var router = express.Router();
 
 
 var registerUser = require('../../../app/controller/authentication/register/register.controller');
-router.post('', registerUser.saveRegisterDetail);
+router.post('/register', registerUser.saveRegisterDetail);
+router.post('/update_profile', registerUser.updateUserProfile);
 
 
 

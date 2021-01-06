@@ -51,3 +51,57 @@ exports.saveRegisterDetail = (req,res)=>{
        }
     })
     };
+
+
+    // Update profile
+exports.updateUserProfile =  (req, res) => {
+    let userData = req.body;
+    try {
+    User.findOne({
+      username: userData.username
+    },function(err,user){
+     if(err){
+        console.log(err)
+        res.status(401).send({success : false , msg : err});
+     } 
+     else
+     {
+       if(userData.action=='Change Password'){
+        bcrypt.compare(userData.password, user.password).then(function(resp) {
+            if(resp === false){
+              res.status(401).send('Current password does not match, please try again');
+            } else {
+              bcrypt.genSalt(saltRounds, function(err, salt) {
+                console.log(userData.confirm_password);
+                bcrypt.hash(userData.confirm_password, salt, function(err, hash) {
+                  
+                   User.update({_id: userData._id}, { $set:{password : hash}},function(err,docs){
+                      if(err){
+                        res.status(401).send({success : false , msg : "Couldn't update your password right now, please try again later"});
+                      }else{
+                        res.status(200).send({success : true, msg :'Password changed successfully'})
+                      }
+                  });
+                   
+                })
+              })
+            }
+          })
+        } else if(userData.action =='Update Profile'){
+          User.update({_id: userData._id}, {$set :{first_name :userData.first_name, last_name : userData.last_name}},function(err,docs){
+              if(err){
+                res.status(401).send({success : false , msg : "Couldn't update your profile right now, please try again later."});                
+              }else{
+                res.status(200).send({success : true, msg :'Profile updated successfully'});
+              }
+          });
+          
+        }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+    };
+    

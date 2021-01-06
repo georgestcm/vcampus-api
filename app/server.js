@@ -53,7 +53,7 @@ app.use(cors());
 
 //for add/register new user
 const user = require("./routes/register/register.route");
-app.use("/api/register", user);
+app.use("/api", user);
 
 //for login user
 const loginUser = require("./routes/login/login.route");
