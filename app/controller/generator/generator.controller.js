@@ -89,3 +89,23 @@ exports.getAllEnrolledCourse = async (req, res) => {
     res.status(500).send({ msg: "Error getting courses" });
   }
 };
+
+exports.getAllEnrolledCourseByName = async (req, res) => {
+  try {
+    const result = await CourseCode.find({
+      assignedToStudent: req.params.studentId,
+    }).populate({
+      path: "curriculam",
+      model: "Curriculums",
+    });
+    let courseList =[]; 
+    for(let i=0; i<result.length; i++){
+      const course = await Courses.find({curriculum : result[i].curriculum, is_deleted : false, "name" :req.params.course  });
+      courseList.push(course);
+    }
+    res.send(courseList.filter(a => a.length >0));
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ msg: "Error getting courses" });
+  }
+};
