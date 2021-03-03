@@ -228,6 +228,10 @@ exports.findCoursesBySchoolId = async (req, res) => {
     const result = await courseModel.find({ is_deleted: false, school : req.params.schoolId  })
     .sort({'created_date': -1})
     .populate({
+      path : 'curriculum',
+      model :'Curriculums',
+    })
+    .populate({
       path: "sections",
       model: "Sections",
       match: { is_deleted: false },
@@ -276,6 +280,7 @@ exports.updateCourse = async (req, res) => {
   courseQuery.user = req.body.userId;
   courseQuery.school = req.body.school;
   courseQuery.curriculum = req.body.curriculum;
+  //courseQuery.curriculum.push(req.body.curriculum);
   courseQuery.availability_from = req.body.availableFrom;
   courseQuery.availability_to = req.body.availableTo;
   courseQuery.is_repeat_yearly = req.body.repeatYearly;
