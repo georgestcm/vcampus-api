@@ -6,18 +6,27 @@ const User = require("../../models/user");
 const CourseCode = require("../../models/generator/courseCode.model");
 const Courses = require("../../models/school/course/course.model")
 
+//Single
+// exports.generateCode = (req, res) => {
+//   let reqData = req.body;
+//   console.log(reqData);
+//   let courseCode = new CourseCode(reqData);
+//   courseCode.save((err, docs) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       res.status(200).send({ msg: "New Course Code has been added" });
+//     }
+//   });
+// };
 
+//Many
 exports.generateCode = (req, res) => {
-  let reqData = req.body;
-  console.log(reqData);
-  let courseCode = new CourseCode(reqData);
-  courseCode.save((err, docs) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.status(200).send({ msg: "New Course Code has been added" });
-    }
-  });
+  CourseCode.insertMany(req.body).then(function(){
+    res.status(200).send({ msg: "New Course Code has been added" });
+  }).catch(function(err){
+    console.log(err);
+  })
 };
 
 exports.getAllCourseCode = async (req, res) => {
