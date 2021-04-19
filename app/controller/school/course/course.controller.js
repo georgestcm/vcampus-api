@@ -256,6 +256,39 @@ exports.findCoursesBySchoolId = async (req, res) => {
   }
 };
 
+exports.findCoursesByCurriculum = async (req, res) => {
+  try {
+    const result = await courseModel.find({ is_deleted: false, curriculum : req.params.curriculumId })
+    .sort({'created_date': -1})
+    .populate({
+      path : 'curriculum',
+      model :'Curriculums',
+    })
+    .populate({
+      path: "sections",
+      model: "Sections",
+      match: { is_deleted: false },
+      populate: {
+        path: "chapters",
+        model: "Chapters",
+        match: { is_deleted: false },
+        populate: {
+          path: "topics",
+          model: "Topics",
+          match: { is_deleted: false },
+        },
+      },
+    });
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error retrieving courses",
+      error,
+    });
+  }
+};
+
 exports.deleteCourse = async (req, res) => {
   try {
     const result = await courseModel.update(
