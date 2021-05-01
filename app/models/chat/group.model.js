@@ -6,11 +6,10 @@ const groupSchema = new schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },
-  GroupMember: {
-    type: [mongoose.Schema.Types.ObjectId],
+  GroupMember: [{
+    type: mongoose.Schema.Types.ObjectId,
     ref: "users",   
-  },
-  
+  }],
   Name:{
     type: String,
     default: null
@@ -39,13 +38,14 @@ const groupSchema = new schema({
   Is_deleted: {
         type: Boolean,
         default: false
-    }  ,
-    Is_admin: {
+  },
+  Is_admin: {
       type: Boolean,
       default: false
-  } 
- 
- 
+  },
+SchoolId :{type: mongoose.Schema.Types.ObjectId,
+  ref: "users"
+  }
 });
 
 module.exports = mongoose.model("Group", groupSchema, "Group");

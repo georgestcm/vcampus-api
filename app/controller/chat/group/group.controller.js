@@ -5,6 +5,36 @@ const mongoose = require("mongoose");
 const groupModel = require("../../../models/chat/group.model");
 const groupMemberModel = require("../../../models/chat/groupmember.model");
 
+exports.joinStudentToGroup = async (req, res) => {
+  const groupQuery = {};
+  groupQuery.AdminId = req.body.AdminId;
+  groupQuery.Name = req.body.GroupName;//SchoolName_Group  
+  groupQuery.Description = req.body.Description;
+  groupQuery.Created_Date = new Date();
+  groupQuery.SchoolId = req.body.SchoolId;
+  groupQuery.GroupMember =[];
+   try {
+    groupModel.findOne({Name : req.body.GroupName})
+      .then(group => {
+        if(group){
+        group.GroupMember.push(req.body.StudentId);
+        group.save(); 
+        res.send({ message: "Student added to existing group: "+req.body.GroupName });
+        }else{
+          groupQuery.GroupMember.push(req.body.StudentId);
+          const result =  groupModel.create(groupQuery);
+          res.send({ message: "group details saved successfully!" });
+        }
+
+      },err =>{
+        res.send({message : "something went wrong!"});
+      });
+  } catch (error) {
+    console.log("error", error);
+    res.send(error);
+  }
+};
+
 exports.saveGroup = async (req, res) => {
     const groupQuery = {};
     groupQuery.AdminId = req.body.AdminId;
@@ -12,6 +42,7 @@ exports.saveGroup = async (req, res) => {
     groupQuery.Description = req.body.Description;
     groupQuery.Created_Date = new Date();
     groupQuery.Updated_Date = new Date();
+    groupQuery.SchoolId = req.body.SchoolId;
      try {
       
       const result = await groupModel.create(groupQuery);
@@ -59,6 +90,19 @@ exports.findAll = (req, res) => {
         });
     });
   };
+
+  // Retrieve and return all groups for school.
+exports.getAllGroupBySchool = (req, res) => {
+  console.log(req.params.schoolId);
+  groupModel.find({SchoolId : req.params.schoolId })
+  .then(groups => {
+      res.send(groups);
+  }).catch(err => {
+      res.status(500).send({
+          message: err.message || "Some error occurred while retrieving groups."
+      });
+  });
+};
   
     // Update a group identified by the groupId in the request
   exports.updateGroup = (req, res) => {

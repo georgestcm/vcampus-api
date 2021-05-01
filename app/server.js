@@ -5,7 +5,9 @@ const app = express();
 const mongoose = require("mongoose");
 const dbConfig = require("../app/core/config/db.config");
 const router = express.Router();
-var morgan = require('morgan')
+var morgan = require('morgan');
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 
 //cors policy
 app.use(function (req, res, next) {
@@ -17,8 +19,11 @@ app.use(function (req, res, next) {
 app.use(morgan('tiny'));
 app.use(express.static('public'));
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, function () {
-  console.log("server has been started at "+PORT);
+// app.listen(PORT, function () {
+//   console.log("server has been started at "+PORT);
+// });
+http.listen(PORT, () => {
+  console.log('listening on *:'+PORT);
 });
 
 app.use(bodyParser.json());
@@ -106,3 +111,47 @@ app.use("/api", courseCode);
 //Code Generator
 const codeGenerator = require("./routes/generator/generator.route");
 app.use("/api", codeGenerator);
+
+//Socket IO
+app.get('/socket', (req, res) => {
+  res.json("api ready for chat");
+});
+
+io.on('connection', (socket) => {
+    console.log('a user connected');
+
+      socket.on('send-message', (message)=>{
+        //console.log(message);
+        io.emit('message',{ msg : message.text, user : socket.username, createdOn : new Date()})
+        //io.sockets.in('user1@example.com').emit('new_msg', {msg: 'hello'});
+      });
+
+      socket.on('send-group-message', (message)=>{
+        //console.log(message);
+        io.to(socket.username).emit('group-message',{ msg : message.text, user : socket.username, sentBy : message.sentBy, createdOn : new Date()})
+        //io.emit('message',{ msg : message.text, user : socket.username, createdOn : new Date()})
+      });
+
+      socket.on('group-join',  (groupId) => {  
+        //console.log(groupId);    
+        socket.username = groupId;
+        //console.log(socket.username);
+        socket.join(socket.username);
+        io.emit('user-changed',{ user : socket.username , event : 'joined'})
+        //io.emit('is_online',  + socket.username + ' join the chat..</i>');
+    });
+
+      socket.on('set-name',  (username) => {      
+        socket.username = username;
+        console.log(socket.username);
+        socket.join(username);
+        io.emit('user-changed',{ user : username , event : 'joined'})
+        //io.emit('is_online',  + socket.username + ' join the chat..</i>');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
+      io.emit('user-changed', {user : socket.username, event : 'left'})
+    });
+
+  });
