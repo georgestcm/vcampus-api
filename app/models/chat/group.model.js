@@ -1,4 +1,6 @@
+const { text } = require("body-parser");
 const mongoose = require("mongoose");
+const { now } = require("underscore");
 const schema = mongoose.Schema;
 
 const groupSchema = new schema({
@@ -45,7 +47,12 @@ const groupSchema = new schema({
   },
 SchoolId :{type: mongoose.Schema.Types.ObjectId,
   ref: "users"
-  }
+  },
+  Chats :[{
+    SentBy : { type : mongoose.Schema.Types.ObjectId, ref : "users"},
+    Message : {type : String},
+    SentOn : {type :Date, default : Date.now}
+  }]
 });
 
 module.exports = mongoose.model("Group", groupSchema, "Group");

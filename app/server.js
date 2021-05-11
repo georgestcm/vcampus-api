@@ -8,6 +8,7 @@ const router = express.Router();
 var morgan = require('morgan');
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
+const groupModel = require("./models/chat/group.model");
 
 //cors policy
 app.use(function (req, res, next) {
@@ -129,7 +130,28 @@ io.on('connection', (socket) => {
       socket.on('send-group-message', (message)=>{
         //console.log(message);
         io.to(socket.username).emit('group-message',{ msg : message.text, user : socket.username, sentBy : message.sentBy, createdOn : new Date()})
+        //Save Data in DB
         //io.emit('message',{ msg : message.text, user : socket.username, createdOn : new Date()})
+
+        try {
+          groupModel.findOne({ _id: message.groupId }).then(
+            (group) => {
+              if (group) {
+                const json = {SentBy : message.loggedInUserId, Message : message.text};
+                console.log(json);
+                group.Chats.push(json);
+                group.save();
+                //console.log("saved");
+              }
+            },
+            (err) => {
+              console.log(err);
+            }
+          );
+        } catch (error) {
+          console.log("error", error);
+        }
+
       });
 
       socket.on('group-join',  (groupId) => {  
@@ -143,7 +165,7 @@ io.on('connection', (socket) => {
 
       socket.on('set-name',  (username) => {      
         socket.username = username;
-        console.log(socket.username);
+        //console.log(socket.username);
         socket.join(username);
         io.emit('user-changed',{ user : username , event : 'joined'})
         //io.emit('is_online',  + socket.username + ' join the chat..</i>');
