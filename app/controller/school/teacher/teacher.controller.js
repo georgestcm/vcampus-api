@@ -96,6 +96,23 @@ exports.saveTeacherDetail = (req,res)=>{
      }
    }
 
+   exports.getAllTeachersBySchool = async (req,res)=>{
+    var schoolId = req.params.schoolId;
+   
+     try {
+       const result = await User.findOne({ _id: schoolId  })
+       .populate("school.teacher._id")
+       .select("school.teacher");
+       res.status(200).json(result);
+     } catch (error) {
+       console.log("error:", error);
+       res.send({
+         message: "Error retrieving teachers.",
+         error,
+       });
+     }
+   }
+
   exports.addTeacherToSchool = async (req,res) =>{
     var teacherId = req.body.teacherId;
     var schoolId = req.body.schoolId;

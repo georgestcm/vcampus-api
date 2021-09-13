@@ -16,4 +16,13 @@ router.get("/course/getCoursesBySchoolId/:schoolId",course.findCoursesBySchoolId
 router.get("/course/findMediaByUserId/:userId",course.findMediaByUserId);
 router.get("/course/findCoursesByCourseName/:searchText",course.findCoursesByCourseName);
 router.get("/course/getCoursesByCurriculum/:curriculumId",course.findCoursesBySchoolId);
+router.post("/course/shareCourseWithTeacher", course.shareCourseWithTeacher);
+
+router.post("/course/saveInvite", course.saveInvite);
+router.post("/course/editInviteStatus", course.editInviteStatus);
+router.get("/course/getInvite/:teacherId",course.getInvite);
+router.delete("/course/deleteInvite/:inviteId", course.deleteInvite);
+
+router.get("/course/getCoursesV2/:schoolId/:userId",course.getCoursesV2);
+
 module.exports = router;

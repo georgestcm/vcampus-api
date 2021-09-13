@@ -7,27 +7,28 @@ const courseModel = require("../../../models/school/course/course.model");
 const sectionModel = require("../../../models/school/course/section.model");
 const chapterModel = require("../../../models/school/course/chapter.model");
 const topicModel = require("../../../models/school/course/topic.model");
-var multer = require('multer');
-var DIR = './public/uploads/';
-var fs =require ("fs");
+var multer = require("multer");
+var DIR = "./public/uploads/";
+var fs = require("fs");
 const GridFsStorage = require("multer-gridfs-storage");
-const Grid = require('gridfs-stream');
+const Grid = require("gridfs-stream");
 //const methodOverride = require('method-override');
 const dbConfig = require("../../../../app/core/config/db.config");
-const crypto = require('crypto');
-const path = require('path');
+const crypto = require("crypto");
+const path = require("path");
 const courseCodeModel = require("../../../models/school/course/courseCode.model");
 const { update } = require("../../../models/school/course/course.model");
 const mediaModel = require("../../../models/school/course/media.model");
+const courseInviteModel = require("../../../models/school/course/course-invite.model");
 //var upload = multer({dest: DIR}).single('file');
 //app.use(methodOverrid("_method"))
 
 const connn = mongoose.createConnection(dbConfig.url);
 let gfs;
-connn.once('open',() =>{
-gfs = Grid(connn.db,mongoose.mongo);
-gfs.collection('uploads');
-})
+connn.once("open", () => {
+  gfs = Grid(connn.db, mongoose.mongo);
+  gfs.collection("uploads");
+});
 
 var Storage = new GridFsStorage({
   url: dbConfig.url,
@@ -37,15 +38,15 @@ var Storage = new GridFsStorage({
         if (err) {
           return reject(err);
         }
-        const filename = buf.toString('hex') + path.extname(file.originalname);
+        const filename = buf.toString("hex") + path.extname(file.originalname);
         const fileInfo = {
           filename: filename,
-          bucketName: 'uploads'
+          bucketName: "uploads",
         };
         resolve(fileInfo);
       });
     });
-  }
+  },
 });
 //const upload = multer({ storage });
 
@@ -55,14 +56,12 @@ let storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     console.log(file.mimetype);
-    var extension = file.originalname.split('.')[1];
-    cb(null, file.fieldname + '-' + Date.now()+"."+extension);
-  }
+    var extension = file.originalname.split(".")[1];
+    cb(null, file.fieldname + "-" + Date.now() + "." + extension);
+  },
 });
 
-
-
-let upload = multer({storage: Storage}).single('file');//.array("supporingDocs[]", 12);//.single('file');
+let upload = multer({ storage: Storage }).single("file"); //.array("supporingDocs[]", 12);//.single('file');
 
 // Create and Save a new course
 exports.saveCourse = async (req, res) => {
@@ -80,11 +79,14 @@ exports.saveCourse = async (req, res) => {
   courseQuery.is_repeat_yearly = req.body.repeatYearly;
   try {
     const result = await courseModel.create(courseQuery);
-    for(var i=0;i <req.body.sections.length; i++){
+    for (var i = 0; i < req.body.sections.length; i++) {
       const sections = await saveSections(req.body.sections[i].section);
-      await courseModel.update({ _id: result._id }, { $push: {sections:sections }});//, {  sections });
-    } 
-    res.send({ message: "Course saved successfully!", _id :result._id });
+      await courseModel.update(
+        { _id: result._id },
+        { $push: { sections: sections } }
+      ); //, {  sections });
+    }
+    res.send({ message: "Course saved successfully!", _id: result._id });
   } catch (error) {
     console.log("error:", error);
     res.send({
@@ -104,7 +106,10 @@ async function saveSections(sections) {
     const result = await sectionModel.create(sectionQuery);
     sectionResults.push(result._id);
     const chapters = await saveChapters(sections[index].chapter);
-    await sectionModel.update({ _id: result._id }, {$push: { chapters: chapters }});
+    await sectionModel.update(
+      { _id: result._id },
+      { $push: { chapters: chapters } }
+    );
   }
   return sectionResults;
 }
@@ -118,7 +123,10 @@ async function saveChapters(chapters) {
     const result = await chapterModel.create(chapterQuery);
     chapterResults.push(result._id);
     const topics = await saveTopics(chapters[index].topic);
-    await chapterModel.update({ _id: result._id }, { $push: { topics: topics }});
+    await chapterModel.update(
+      { _id: result._id },
+      { $push: { topics: topics } }
+    );
   }
   return chapterResults;
 }
@@ -167,23 +175,24 @@ exports.findCourseById = async (req, res) => {
 
 exports.findCourses = async (req, res) => {
   try {
-    const result = await courseModel.find({ is_deleted: false, school :{ $exists: true } })
-    .sort({'created_date': -1})
-    .populate({
-      path: "sections",
-      model: "Sections",
-      match: { is_deleted: false },
-      populate: {
-        path: "chapters",
-        model: "Chapters",
+    const result = await courseModel
+      .find({ is_deleted: false, school: { $exists: true } })
+      .sort({ created_date: -1 })
+      .populate({
+        path: "sections",
+        model: "Sections",
         match: { is_deleted: false },
         populate: {
-          path: "topics",
-          model: "Topics",
+          path: "chapters",
+          model: "Chapters",
           match: { is_deleted: false },
+          populate: {
+            path: "topics",
+            model: "Topics",
+            match: { is_deleted: false },
+          },
         },
-      },
-    });
+      });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -196,23 +205,28 @@ exports.findCourses = async (req, res) => {
 
 exports.findCoursesByCourseName = async (req, res) => {
   try {
-    const result = await courseModel.find({ is_deleted: false,  name: { "$regex": req.params.searchText, "$options": "i" }, school :{ $exists: true } })
-    .sort({'created_date': -1})
-    .populate({
-      path: "sections",
-      model: "Sections",
-      match: { is_deleted: false },
-      populate: {
-        path: "chapters",
-        model: "Chapters",
+    const result = await courseModel
+      .find({
+        is_deleted: false,
+        name: { $regex: req.params.searchText, $options: "i" },
+        school: { $exists: true },
+      })
+      .sort({ created_date: -1 })
+      .populate({
+        path: "sections",
+        model: "Sections",
         match: { is_deleted: false },
         populate: {
-          path: "topics",
-          model: "Topics",
+          path: "chapters",
+          model: "Chapters",
           match: { is_deleted: false },
+          populate: {
+            path: "topics",
+            model: "Topics",
+            match: { is_deleted: false },
+          },
         },
-      },
-    });
+      });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -225,27 +239,28 @@ exports.findCoursesByCourseName = async (req, res) => {
 
 exports.findCoursesBySchoolId = async (req, res) => {
   try {
-    const result = await courseModel.find({ is_deleted: false, school : req.params.schoolId  })
-    .sort({'created_date': -1})
-    .populate({
-      path : 'curriculum',
-      model :'Curriculums',
-    })
-    .populate({
-      path: "sections",
-      model: "Sections",
-      match: { is_deleted: false },
-      populate: {
-        path: "chapters",
-        model: "Chapters",
+    const result = await courseModel
+      .find({ is_deleted: false, school: req.params.schoolId })
+      .sort({ created_date: -1 })
+      .populate({
+        path: "curriculum",
+        model: "Curriculums",
+      })
+      .populate({
+        path: "sections",
+        model: "Sections",
         match: { is_deleted: false },
         populate: {
-          path: "topics",
-          model: "Topics",
+          path: "chapters",
+          model: "Chapters",
           match: { is_deleted: false },
+          populate: {
+            path: "topics",
+            model: "Topics",
+            match: { is_deleted: false },
+          },
         },
-      },
-    });
+      });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -258,27 +273,67 @@ exports.findCoursesBySchoolId = async (req, res) => {
 
 exports.findCoursesByCurriculum = async (req, res) => {
   try {
-    const result = await courseModel.find({ is_deleted: false, curriculum : req.params.curriculumId })
-    .sort({'created_date': -1})
-    .populate({
-      path : 'curriculum',
-      model :'Curriculums',
-    })
-    .populate({
-      path: "sections",
-      model: "Sections",
-      match: { is_deleted: false },
-      populate: {
-        path: "chapters",
-        model: "Chapters",
+    const result = await courseModel
+      .find({ is_deleted: false, curriculum: req.params.curriculumId })
+      .sort({ created_date: -1 })
+      .populate({
+        path: "curriculum",
+        model: "Curriculums",
+      })
+      .populate({
+        path: "sections",
+        model: "Sections",
         match: { is_deleted: false },
         populate: {
-          path: "topics",
-          model: "Topics",
+          path: "chapters",
+          model: "Chapters",
           match: { is_deleted: false },
+          populate: {
+            path: "topics",
+            model: "Topics",
+            match: { is_deleted: false },
+          },
         },
-      },
+      });
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error retrieving courses",
+      error,
     });
+  }
+};
+
+exports.getCoursesV2 = async (req, res) => {
+  try {
+    const result = await courseModel
+      .find({
+        $or: [
+            { is_deleted: false, school: req.params.schoolId, user : req.params.userId } ,
+            {courseAccess : {$in :[req.params.userId]}}
+        ]
+    })
+      .sort({ created_date: -1 })
+      .populate({
+        path: "curriculum",
+        model: "Curriculums",
+      })
+      .populate({
+        path: "sections",
+        model: "Sections",
+        match: { is_deleted: false },
+        populate: {
+          path: "chapters",
+          model: "Chapters",
+          match: { is_deleted: false },
+          populate: {
+            path: "topics",
+            model: "Topics",
+            match: { is_deleted: false },
+          },
+        },
+      });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -336,43 +391,55 @@ exports.updateCourse = async (req, res) => {
 };
 
 exports.addCodeToCourse = async (req, res) => {
-  
   try {
-    await courseModel.update({ _id: req.body.courseId }, {$addToSet: { codes: req.body.code }, updated_date : new Date()});
-    res.status(200).json({ message: "Code added successfully!", success : true });
+    await courseModel.update(
+      { _id: req.body.courseId },
+      { $addToSet: { codes: req.body.code }, updated_date: new Date() }
+    );
+    res
+      .status(200)
+      .json({ message: "Code added successfully!", success: true });
   } catch (error) {
     console.log("error:", error);
     res.status(405).json({
       message: "Error adding course code.",
       error,
-      success : false
+      success: false,
     });
   }
 };
 
 exports.findCoursesByCode = async (req, res) => {
   try {
-    const courseResult = await courseCodeModel.find({courseCode : req.params.code, courseCodeValidTo : { $gte: new Date() }, isDeleted : false, isActive : true})
-    if(courseResult && courseResult.length==0){      
-      res.status(405).json({message : "Course not found with code :"+req.params.code});
+    const courseResult = await courseCodeModel.find({
+      courseCode: req.params.code,
+      courseCodeValidTo: { $gte: new Date() },
+      isDeleted: false,
+      isActive: true,
+    });
+    if (courseResult && courseResult.length == 0) {
+      res
+        .status(405)
+        .json({ message: "Course not found with code :" + req.params.code });
     }
-    const result = await courseModel.find({ is_deleted: false, codes :{"$in" :req.params.code}  })
-    .sort({'created_date': -1})
-    .populate({
-      path: "sections",
-      model: "Sections",
-      match: { is_deleted: false },
-      populate: {
-        path: "chapters",
-        model: "Chapters",
+    const result = await courseModel
+      .find({ is_deleted: false, codes: { $in: req.params.code } })
+      .sort({ created_date: -1 })
+      .populate({
+        path: "sections",
+        model: "Sections",
         match: { is_deleted: false },
         populate: {
-          path: "topics",
-          model: "Topics",
+          path: "chapters",
+          model: "Chapters",
           match: { is_deleted: false },
+          populate: {
+            path: "topics",
+            model: "Topics",
+            match: { is_deleted: false },
+          },
         },
-      },
-    });
+      });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -383,10 +450,9 @@ exports.findCoursesByCode = async (req, res) => {
   }
 };
 
-
 exports.findMediaByUserId = async (req, res) => {
   try {
-    const result = await mediaModel.find({user : req.params.userId})
+    const result = await mediaModel.find({ user: req.params.userId });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -479,53 +545,119 @@ async function updateTopics(topics, chapterId) {
   return true;
 }
 //our file upload function.
-exports.readDocs =   (req, res) => {
+exports.readDocs = (req, res) => {
   console.log("req");
-  gfs.files.findOne({ filename : req.params.filename}, (err,file) =>{
-   if( !file || file.length ===0){
-     return res.status(404).json({error : "File not found!"});
-   }
-   else if(err){
-     return res.status(404).json({error : err});
-   }
-   else{
-     const readstream = gfs.createReadStream(file.filename);
-     readstream.pipe(res);
-   }
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    if (!file || file.length === 0) {
+      return res.status(404).json({ error: "File not found!" });
+    } else if (err) {
+      return res.status(404).json({ error: err });
+    } else {
+      const readstream = gfs.createReadStream(file.filename);
+      readstream.pipe(res);
+    }
   });
-
 };
 
-exports.uploadDocs =  async (req, res, next) => {
-    upload(req, res, function (err) {
-       if (err) {
-         console.log(err);
-         return res.status(422).send("an Error occured")
-       }  
-       console.log(req.body.title);
-       //console.log(req.body.topicId);
-       var fileName = req.file.filename;
-       const result =  createMedia(req.body.userId, req.body.title, fileName);
-       //const resultUpdate =  updateDocs(req.body.topicId, req.body.paragraphId, fileName);
-       console.log(result);
-       //path = req.file.path;  
-       res.send(fileName);   
-      // return res.status(200).json({"uploaded":true, "fileName":fileName}); 
-  });     
- // })
+exports.shareCourseWithTeacher = async (req, res) => {
+  try {
+    courseModel.findOne({ _id: req.body.courseId }).then(
+      (course) => {
+        if (course) {
+          course.sharedTeachers.push(req.body.teacherId);
+          course.save();
+          res.send({
+            message: "Course shared success!",
+          });
+        }
+      },
+      (err) => {
+        res.send({ message: "something went wrong!" });
+      }
+    );
+  } catch (error) {
+    console.log("error", error);
+    res.send(error);
+  }
+};
 
- async function updateDocs(topicId, paragraphId, fileName){
-   await topicModel.update({_id : topicId, "paragraph._id":paragraphId},
-    {$set :{"paragraph.$.supportingDocs":fileName}});
- } 
+exports.uploadDocs = async (req, res, next) => {
+  upload(req, res, function (err) {
+    if (err) {
+      console.log(err);
+      return res.status(422).send("an Error occured");
+    }
+    console.log(req.body.title);
+    var fileName = req.file.filename;
+    const result = createMedia(req.body.userId, req.body.title, fileName);
+    res.send(fileName);
+  });
+  // })
 
- async function createMedia(userId, title, fileName){
-   const query ={
-       user : userId,
-       title : title,
-       fileName : fileName
-   };
-  await mediaModel.create(query);
-} 
+  async function updateDocs(topicId, paragraphId, fileName) {
+    await topicModel.update(
+      { _id: topicId, "paragraph._id": paragraphId },
+      { $set: { "paragraph.$.supportingDocs": fileName } }
+    );
+  }
+
+  async function createMedia(userId, title, fileName) {
+    const query = {
+      user: userId,
+      title: title,
+      fileName: fileName,
+    };
+    await mediaModel.create(query);
+  }
+};
+
+exports.saveInvite = async (req, res) => {
+  try {
+    const request = {
+      sender : req.body.senderId,
+      receipent : req.body.receipentId,
+      course : req.body.courseId
+    }
+    await courseInviteModel.create(request);
+    res
+      .status(200)
+      .json({ message: "Invite saved successfully!", success: true });
+  } catch (error) {
+    console.log("error", error);
+    res.status(405).json({ message: error, success: false });
+  }
+};
+exports.getInvite = async(req, res) => {
+  try {
+    console.log(req.params.teacherId);
+    const result = await courseInviteModel
+    .find({isDeleted : false, receipent : req.params.teacherId})
+    .populate("course")
+    .populate("sender");
+    res.status(200).json(result);
+} catch (error) {
+    return res.status(405).json({error : error});
+}  
+};
+exports.editInviteStatus = async(req, res) => {
+  try {
+    const status = req.body.status;
+    console.log(req.body);
+    await courseInviteModel.updateOne({_id : req.body.id},{status : req.body.status});
+    if(status == 'Accepted'){
+    await courseModel.updateOne({_id : req.body.courseId}, {$addToSet: {courseAccess : req.body.teacherId}});
+    }
+    res.status(200).json({ message: "Invitation Deleted successfully!" });
+} catch (error) {
+    return res.status(405).json({error : error});
 }
+};
 
+exports.deleteInvite = async(req, res) => {
+  try {
+    await courseInviteModel.updateOne({_id : req.params.inviteId},{isDeleted :true});
+    res.status(200).json({ message: "Invitation Deleted successfully!" });
+} catch (error) {
+    return res.status(405).json({error : error});
+}
+};

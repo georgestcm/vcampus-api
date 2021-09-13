@@ -20,7 +20,6 @@ exports.saveCourseCode = async (req,res) =>{
     }
 }
 exports.getAllCourseCode = async (req, res) =>{
-    console.log('calling');
     try {
         const result = await courseCodeModel.find({isDeleted : false})
         .populate({

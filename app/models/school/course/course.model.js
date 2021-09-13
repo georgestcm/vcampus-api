@@ -57,11 +57,13 @@ school:{
   },
   codes: [
      {type : String}
-    // {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "CourseCodes",
-    // },
-  ] 
+  ],
+  courseAccess: [//will insert self id along with shared teacher id 
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    }
+  ]
 });
 
 module.exports = mongoose.model("Courses", coureSchema, "Courses");
