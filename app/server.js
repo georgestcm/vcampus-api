@@ -114,6 +114,10 @@ app.use("/api", courseCode);
 const codeGenerator = require("./routes/generator/generator.route");
 app.use("/api", codeGenerator);
 
+//Meeting
+const meeting = require("./routes/meeting/meeting.route");
+app.use("/api", meeting);
+
 //Socket IO
 app.get('/socket', (req, res) => {
   res.json("api ready for chat");
@@ -180,7 +184,7 @@ io.on('connection', (socket) => {
   });
 
   //******************** WebSocket ***************************
-  const wss = new WebSocket.Server({ port: 8081 }, () => {
+  const wss = new WebSocket.Server({ port: 8081 }, (req) => {
     console.log("Signalling server is now listening on port 8081");
 });
 
@@ -192,8 +196,9 @@ wss.broadcast = (ws, data) => {
   });
 };
 
-wss.on('connection', ws => {
+wss.on('connection', (ws, req) => {
   console.log(`Client connected. Total connected clients: ${wss.clients.size}`);
+  console.log(req.socket.remoteAddress);
 
   ws.on('message', message => {
       // msg = JSON.parse(message);
