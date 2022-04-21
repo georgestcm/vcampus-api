@@ -68,7 +68,7 @@ school:{
   },
   curriculums:[
     {
-      type:String,
+      type:mongoose.Schema.Types.ObjectId,
       default:null
     }
   ],

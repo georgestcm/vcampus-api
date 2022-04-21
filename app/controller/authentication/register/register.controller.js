@@ -75,7 +75,7 @@ exports.updateUserProfile =  (req, res) => {
                 console.log(userData.confirm_password);
                 bcrypt.hash(userData.confirm_password, salt, function(err, hash) {
                   
-                   User.update({_id: userData._id}, { $set:{password : hash}},function(err,docs){
+                   User.updateOne({_id: userData._id}, { $set:{password : hash}},function(err,docs){
                       if(err){
                         res.status(401).send({success : false , msg : "Couldn't update your password right now, please try again later"});
                       }else{
@@ -88,7 +88,17 @@ exports.updateUserProfile =  (req, res) => {
             }
           })
         } else if(userData.action =='Update Profile'){
-          User.update({_id: userData._id}, {$set :{first_name :userData.first_name, last_name : userData.last_name, email :userData.email}},function(err,docs){
+          User.updateOne({_id: userData._id}, {$set :{first_name :userData.first_name, last_name : userData.last_name, email :userData.email}},function(err,docs){
+              if(err){
+                res.status(401).send({success : false , msg : "Couldn't update your profile right now, please try again later."});                
+              }else{
+                res.status(200).send({success : true, msg :'Profile updated successfully'});
+              }
+          });
+          
+        }
+        else if(userData.action =='Update School Profile'){
+          User.updateOne({_id: userData._id}, {$set :{"school.principal_first_name" :userData.first_name, "school.principal_first_name" : userData.last_name, email :userData.email}},function(err,docs){
               if(err){
                 res.status(401).send({success : false , msg : "Couldn't update your profile right now, please try again later."});                
               }else{

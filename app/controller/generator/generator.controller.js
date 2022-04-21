@@ -59,9 +59,17 @@ exports.studentCourseEnrollment = async (req, res) => {
             if (err) {
               res.status(500).send({ msg: "Error enrolling course code" });
             } else {
-              res
-                .status(200)
-                .send({ msg: "Enrollment Success", courseCode: result });
+               User.findByIdAndUpdate({_id : req.body.studentId}, { $push: {"school.curriculums": result.curriculum}},function(err, user){
+                if(err){
+                  res.status(500).send({ msg: "Error enrolling course code" });
+                }else{
+                  res
+                  .status(200)
+                  .send({ msg: "Enrollment Success", courseCode: result });
+                }
+              })
+
+             
             }
           }
         );
@@ -88,11 +96,30 @@ exports.getAllEnrolledCourse = async (req, res) => {
       model: "Curriculums",
     });
     let courseList =[]; 
+   
     for(let i=0; i<result.length; i++){
-      const course = await Courses.find({curriculum : result[i].curriculum, is_deleted : false });
+      const course = await Courses.find({curriculum : mongoose.Types.ObjectId(result[i].curriculum), is_deleted : false }).populate({
+        path: "curriculum",
+        model: "Curriculums",
+      });
       courseList.push(course);
     }
     res.send(courseList.filter(a => a.length >0));
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ msg: "Error getting courses" });
+  }
+};
+
+exports.getAllEnrolledCurriculum = async (req, res) => {
+  try {
+    const result = await CourseCode.find({
+      assignedToStudent: req.params.studentId,
+    }).populate({
+      path: "curriculum",
+      model: "Curriculums",
+    });
+    res.status(200).send({ result : [...result] });
   } catch (error) {
     console.log(error);
     res.status(500).send({ msg: "Error getting courses" });
