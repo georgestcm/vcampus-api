@@ -173,6 +173,19 @@ exports.getAllAdminStaff = async (req, res) => {
   }
 };
 
+exports.getAllSchoolStaff = async (req, res) => {
+  try {
+    const result = await User.find({ roles: { $in: 4 } });
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error retrieving Admin Staff.",
+      error,
+    });
+  }
+};
+
 exports.updateStaffDetail = (req, res) => {
   try {
     User.findByIdAndUpdate(req.body._id, req.body, function (err, staff) {

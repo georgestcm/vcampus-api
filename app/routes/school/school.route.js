@@ -9,6 +9,7 @@ router.get('/get_all_schools_for_admin',SchoolData.getAllSchoolForAdmin);
 router.get('/get_all_students/:schoolId',SchoolData.getAllStudents);
 router.put('/updateSchoolDetail',SchoolData.updateSchoolDetail);
 router.get('/getAllAdminStaff',SchoolData.getAllAdminStaff);
+router.get('/getAllSchoolStaff',SchoolData.getAllSchoolStaff);
 router.put('/updateStaffDetail',SchoolData.updateStaffDetail);
 router.delete('/deleteUserPermanent/:id',SchoolData.deleteUserPermanent);
 router.get('/student_list',SchoolData.studentList);
