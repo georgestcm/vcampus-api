@@ -180,7 +180,20 @@ exports.getAllSchoolStaff = async (req, res) => {
   } catch (error) {
     console.log("error:", error);
     res.send({
-      message: "Error retrieving Admin Staff.",
+      message: "Error retrieving School Staff.",
+      error,
+    });
+  }
+};
+
+exports.getAllCodeGenerator = async (req, res) => {
+  try {
+    const result = await User.find({ roles: { $in: 7 } });
+    res.send(result);
+  } catch (error) {
+    console.log("error:", error);
+    res.send({
+      message: "Error retrieving Code Generator.",
       error,
     });
   }

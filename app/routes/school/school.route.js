@@ -16,4 +16,5 @@ router.get('/student_list',SchoolData.studentList);
 router.post('/save_curriculam',SchoolData.saveCurriculam);
 router.get('/get_curriculam',SchoolData.getAllCurriculam);
 router.get('/get_curriculam_by_school/:schoolId',SchoolData.getAllCurriculamBySchoolId);
+router.get('/getAllCodeGenerator',SchoolData.getAllCodeGenerator);
 module.exports = router;
