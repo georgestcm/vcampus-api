@@ -235,7 +235,7 @@ exports.saveCurriculam = async (req, res) =>{
      const curriculumReq = new Curriculum(req.body);
       curriculumReq.save((err, docs) =>{
         if(err){
-          res.status(405).send({msg : error});
+          res.status(405).send({msg : err});
         }else{
           res.status(200).send({msg : "Curriculam added successfully."});
         }
