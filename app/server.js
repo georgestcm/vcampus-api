@@ -19,15 +19,19 @@ const WebSocket = require('ws');
 //   next();
 // });
 
-var corsOptions = {
-  origin: 'https://vcampus-api.herokuapp.com/',
-  optionsSuccessStatus: 200 // For legacy browser support
- // methods: "GET, PUT, POST, DELETE"
-}
+// var corsOptions = {
+//   origin: 'https://vcampus-api.herokuapp.com/',
+//   optionsSuccessStatus: 200 // For legacy browser support
+//  // methods: "GET, PUT, POST, DELETE"
+// }
 
-app.use(cors(corsOptions));
+app.use(cors({
+  methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+}));
 
-app.options('*', cors()) 
+//app.use(cors(corsOptions));
+
+//app.options('*', cors()) 
 
 app.use(morgan('tiny'));
 app.use(express.static('public'));
@@ -67,7 +71,7 @@ app.get("/", (req, res) => {
   res.json("api ready vcampus");
 });
 
-app.use(cors());
+//app.use(cors());
 
 //for add/register new user
 const user = require("./routes/register/register.route");
