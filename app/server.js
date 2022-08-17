@@ -12,12 +12,21 @@ const groupModel = require("./models/chat/group.model");
 const WebSocket = require('ws');
 
 //cors policy
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+//   next();
+// });
+
+var corsOptions = {
+  origin: 'https://vcampus-api.herokuapp.com/',
+  optionsSuccessStatus: 200, // For legacy browser support
+  methods: "GET, PUT, POST, DELETE"
+}
+
+app.use(cors(corsOptions));
+
 app.use(morgan('tiny'));
 app.use(express.static('public'));
 const PORT = process.env.PORT || 3000;
