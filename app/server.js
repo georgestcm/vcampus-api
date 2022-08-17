@@ -12,7 +12,7 @@ const groupModel = require("./models/chat/group.model");
 const WebSocket = require('ws');
 
 //cors policy
-app.use(cors({ origin: "https://vcampus.app", credentials: true }))
+
 app.use(function (req, res, next) {
   // origin: ['https://vcampus-api.herokuapp.com/'];
   // origin: true;
@@ -35,6 +35,7 @@ app.use(function (req, res, next) {
     }
     next();
 });
+app.use(cors({ origin: "https://vcampus.app", credentials: true }))
 
 app.use(morgan('tiny'));
 app.use(express.static('public'));
