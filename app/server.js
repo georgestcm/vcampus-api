@@ -22,7 +22,7 @@ const WebSocket = require('ws');
 var corsOptions = {
   origin: 'https://vcampus-api.herokuapp.com/',
   optionsSuccessStatus: 200, // For legacy browser support
-  methods: "GET, PUT, POST, DELETE"
+  methods: "GET, PUT, POST, DELETE, OPTIONS"
 }
 
 app.use(cors(corsOptions));
