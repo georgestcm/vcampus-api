@@ -35,6 +35,10 @@ const multichoice_questionSchema = new schema({
     type: Number,
     default: null,
   },
+  Answer_comment: {
+    type: String,
+    default: null,
+  },
   All_True :[{
     type : Number,
     default : null
