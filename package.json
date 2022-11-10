@@ -25,6 +25,9 @@
     "socket.io": "^2.3.0",
     "underscore": "^1.9.2"
   },
+  "engines":{
+    "node":"18"
+    },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/georgestcm/vcampus-api.git"
