@@ -4,9 +4,9 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const courseModel = require("../../../models/school/course/course.model");
-const sectionModel = require("../../../models/school/course/section.model");
+//const sectionModel = require("../../../models/school/course/section.model");
 const chapterModel = require("../../../models/school/course/chapter.model");
-const topicModel = require("../../../models/school/course/topic.model");
+//const topicModel = require("../../../models/school/course/topic.model");
 var multer = require("multer");
 var DIR = "./public/uploads/";
 var fs = require("fs");
@@ -69,6 +69,7 @@ exports.saveCourse = async (req, res) => {
   courseQuery.name = req.body.courseName;
   courseQuery.description = req.body.description;
   courseQuery.subject = req.body.subject;
+  courseQuery.chapters = req.body.chapters;
   courseQuery.user = req.body.userId;
   courseQuery.school = req.body.school;
   courseQuery.curriculum = req.body.curriculum;
@@ -77,15 +78,16 @@ exports.saveCourse = async (req, res) => {
   courseQuery.created_date = new Date();
   courseQuery.updated_date = new Date();
   courseQuery.is_repeat_yearly = req.body.repeatYearly;
+
   try {
     const result = await courseModel.create(courseQuery);
-    for (var i = 0; i < req.body.sections.length; i++) {
-      const sections = await saveSections(req.body.sections[i].section);
-      await courseModel.update(
-        { _id: result._id },
-        { $push: { sections: sections } }
-      ); //, {  sections });
-    }
+    // for (var i = 0; i < req.body.sections.length; i++) {
+    //   const sections = await saveSections(req.body.sections[i].section);
+    //   await courseModel.update(
+    //     { _id: result._id },
+    //     { $push: { sections: sections } }
+    //   ); //, {  sections });
+    // }
     res.send({ message: "Course saved successfully!", _id: result._id });
   } catch (error) {
     console.log("error:", error);
@@ -96,73 +98,74 @@ exports.saveCourse = async (req, res) => {
   }
 };
 
-async function saveSections(sections) {
-  let sectionResults = [];
-  for (let index = 0; index < sections.length; index++) {
-    const sectionQuery = {};
-    sectionQuery.section_name = sections[index].sectionName;
-    sectionQuery.updated_date = new Date();
-    sectionQuery.created_date = new Date();
-    const result = await sectionModel.create(sectionQuery);
-    sectionResults.push(result._id);
-    const chapters = await saveChapters(sections[index].chapter);
-    await sectionModel.update(
-      { _id: result._id },
-      { $push: { chapters: chapters } }
-    );
-  }
-  return sectionResults;
-}
-async function saveChapters(chapters) {
-  let chapterResults = [];
-  for (let index = 0; index < chapters.length; index++) {
-    const chapterQuery = {};
-    chapterQuery.chapter_name = chapters[index].chapterName;
-    chapterQuery.updated_date = new Date();
-    chapterQuery.created_date = new Date();
-    const result = await chapterModel.create(chapterQuery);
-    chapterResults.push(result._id);
-    const topics = await saveTopics(chapters[index].topic);
-    await chapterModel.update(
-      { _id: result._id },
-      { $push: { topics: topics } }
-    );
-  }
-  return chapterResults;
-}
-async function saveTopics(topics) {
-  let topicResults = [];
-  for (let index = 0; index < topics.length; index++) {
-    const topicQuery = {};
-    topicQuery.topic_name = topics[index].topicName;
-    topicQuery.paragraph = topics[index].paragraph;
-    topicQuery.updated_date = new Date();
-    topicQuery.created_date = new Date();
-    const result = await topicModel.create(topicQuery);
-    topicResults.push(result._id);
-  }
-  return topicResults;
-}
+// async function saveSections(sections) {
+//   let sectionResults = [];
+//   for (let index = 0; index < sections.length; index++) {
+//     const sectionQuery = {};
+//     sectionQuery.section_name = sections[index].sectionName;
+//     sectionQuery.updated_date = new Date();
+//     sectionQuery.created_date = new Date();
+//     const result = await sectionModel.create(sectionQuery);
+//     sectionResults.push(result._id);
+//     const chapters = await saveChapters(sections[index].chapter);
+//     await sectionModel.update(
+//       { _id: result._id },
+//       { $push: { chapters: chapters } }
+//     );
+//   }
+//   return sectionResults;
+// }
+// async function saveChapters(chapters) {
+//   let chapterResults = [];
+//   for (let index = 0; index < chapters.length; index++) {
+//     const chapterQuery = {};
+//     chapterQuery.chapter_name = chapters[index].chapterName;
+//     chapterQuery.course_content = chapters[index].courseContent;
+//     chapterQuery.updated_date = new Date();
+//     chapterQuery.created_date = new Date();
+//     const result = await chapterModel.create(chapterQuery);
+//     chapterResults.push(result._id);
+//     const topics = await saveTopics(chapters[index].topic);
+//     await chapterModel.update(
+//       { _id: result._id },
+//       { $push: { topics: topics } }
+//     );
+//   }
+//   return chapterResults;
+// }
+// async function saveTopics(topics) {
+//   let topicResults = [];
+//   for (let index = 0; index < topics.length; index++) {
+//     const topicQuery = {};
+//     topicQuery.topic_name = topics[index].topicName;
+//     topicQuery.paragraph = topics[index].paragraph;
+//     topicQuery.updated_date = new Date();
+//     topicQuery.created_date = new Date();
+//     const result = await topicModel.create(topicQuery);
+//     topicResults.push(result._id);
+//   }
+//   return topicResults;
+// }
 
 exports.findCourseById = async (req, res) => {
   try {
     const result = await courseModel
-      .findOne({ _id: req.params.courseId, is_deleted: false })
-      .populate({
-        path: "sections",
-        model: "Sections",
-        match: { is_deleted: false },
-        populate: {
-          path: "chapters",
-          model: "Chapters",
-          match: { is_deleted: false },
-          populate: {
-            path: "topics",
-            model: "Topics",
-            match: { is_deleted: false },
-          },
-        },
-      });
+      .findOne({ _id: req.params.courseId, is_deleted: false });
+      // .populate({
+      //   path: "sections",
+      //   model: "Sections",
+      //   match: { is_deleted: false },
+      //   populate: {
+      //     path: "chapters",
+      //     model: "Chapters",
+      //     match: { is_deleted: false },
+      //     populate: {
+      //       path: "topics",
+      //       model: "Topics",
+      //       match: { is_deleted: false },
+      //     },
+      //   },
+      // });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -177,22 +180,22 @@ exports.findCourses = async (req, res) => {
   try {
     const result = await courseModel
       .find({ is_deleted: false, school: { $exists: true } })
-      .sort({ created_date: -1 })
-      .populate({
-        path: "sections",
-        model: "Sections",
-        match: { is_deleted: false },
-        populate: {
-          path: "chapters",
-          model: "Chapters",
-          match: { is_deleted: false },
-          populate: {
-            path: "topics",
-            model: "Topics",
-            match: { is_deleted: false },
-          },
-        },
-      });
+      .sort({ created_date: -1 });
+      // .populate({
+      //   path: "sections",
+      //   model: "Sections",
+      //   match: { is_deleted: false },
+      //   populate: {
+      //     path: "chapters",
+      //     model: "Chapters",
+      //     match: { is_deleted: false },
+      //     populate: {
+      //       path: "topics",
+      //       model: "Topics",
+      //       match: { is_deleted: false },
+      //     },
+      //   },
+      // });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -211,22 +214,22 @@ exports.findCoursesByCourseName = async (req, res) => {
         name: { $regex: req.params.searchText, $options: "i" },
         school: { $exists: true },
       })
-      .sort({ created_date: -1 })
-      .populate({
-        path: "sections",
-        model: "Sections",
-        match: { is_deleted: false },
-        populate: {
-          path: "chapters",
-          model: "Chapters",
-          match: { is_deleted: false },
-          populate: {
-            path: "topics",
-            model: "Topics",
-            match: { is_deleted: false },
-          },
-        },
-      });
+      .sort({ created_date: -1 });
+      // .populate({
+      //   path: "sections",
+      //   model: "Sections",
+      //   match: { is_deleted: false },
+      //   populate: {
+      //     path: "chapters",
+      //     model: "Chapters",
+      //     match: { is_deleted: false },
+      //     populate: {
+      //       path: "topics",
+      //       model: "Topics",
+      //       match: { is_deleted: false },
+      //     },
+      //   },
+      // });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -241,26 +244,26 @@ exports.findCoursesBySchoolId = async (req, res) => {
   try {
     const result = await courseModel
       .find({ is_deleted: false, school: req.params.schoolId })
-      .sort({ created_date: -1 })
-      .populate({
-        path: "curriculum",
-        model: "Curriculums",
-      })
-      .populate({
-        path: "sections",
-        model: "Sections",
-        match: { is_deleted: false },
-        populate: {
-          path: "chapters",
-          model: "Chapters",
-          match: { is_deleted: false },
-          populate: {
-            path: "topics",
-            model: "Topics",
-            match: { is_deleted: false },
-          },
-        },
-      });
+      .sort({ created_date: -1 });
+      // .populate({
+      //   path: "curriculum",
+      //   model: "Curriculums",
+      // })
+      // .populate({
+      //   path: "sections",
+      //   model: "Sections",
+      //   match: { is_deleted: false },
+      //   populate: {
+      //     path: "chapters",
+      //     model: "Chapters",
+      //     match: { is_deleted: false },
+      //     populate: {
+      //       path: "topics",
+      //       model: "Topics",
+      //       match: { is_deleted: false },
+      //     },
+      //   },
+      // });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -275,26 +278,26 @@ exports.findCoursesByCurriculum = async (req, res) => {
   try {
     const result = await courseModel
       .find({ is_deleted: false, curriculum: req.params.curriculumId })
-      .sort({ created_date: -1 })
-      .populate({
-        path: "curriculum",
-        model: "Curriculums",
-      })
-      .populate({
-        path: "sections",
-        model: "Sections",
-        match: { is_deleted: false },
-        populate: {
-          path: "chapters",
-          model: "Chapters",
-          match: { is_deleted: false },
-          populate: {
-            path: "topics",
-            model: "Topics",
-            match: { is_deleted: false },
-          },
-        },
-      });
+      .sort({ created_date: -1 });
+      // .populate({
+      //   path: "curriculum",
+      //   model: "Curriculums",
+      // })
+      // .populate({
+      //   path: "sections",
+      //   model: "Sections",
+      //   match: { is_deleted: false },
+      //   populate: {
+      //     path: "chapters",
+      //     model: "Chapters",
+      //     match: { is_deleted: false },
+      //     populate: {
+      //       path: "topics",
+      //       model: "Topics",
+      //       match: { is_deleted: false },
+      //     },
+      //   },
+      // });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -314,26 +317,26 @@ exports.getCoursesV2 = async (req, res) => {
             {courseAccess : {$in :[req.params.userId]}}
         ]
     })
-      .sort({ created_date: -1 })
-      .populate({
-        path: "curriculum",
-        model: "Curriculums",
-      })
-      .populate({
-        path: "sections",
-        model: "Sections",
-        match: { is_deleted: false },
-        populate: {
-          path: "chapters",
-          model: "Chapters",
-          match: { is_deleted: false },
-          populate: {
-            path: "topics",
-            model: "Topics",
-            match: { is_deleted: false },
-          },
-        },
-      });
+      .sort({ created_date: -1 });
+      // .populate({
+      //   path: "curriculum",
+      //   model: "Curriculums",
+      // })
+      // .populate({
+      //   path: "sections",
+      //   model: "Sections",
+      //   match: { is_deleted: false },
+      //   populate: {
+      //     path: "chapters",
+      //     model: "Chapters",
+      //     match: { is_deleted: false },
+      //     populate: {
+      //       path: "topics",
+      //       model: "Topics",
+      //       match: { is_deleted: false },
+      //     },
+      //   },
+      // });
     res.send(result);
   } catch (error) {
     console.log("error:", error);
@@ -374,6 +377,12 @@ exports.updateCourse = async (req, res) => {
   courseQuery.is_repeat_yearly = req.body.repeatYearly;
   courseQuery.updated_date = new Date();
   courseQuery.is_repeat_yearly = req.body.IsRepeatYearly;
+
+  // Course.updateMany({}, { $set: { chapters: [] } }, (err, result) => {
+  //   if (err) {
+  //     console.error(err);
+  //     return;
+  //   }
   try {
     await courseModel.update({ _id: req.params.courseId }, courseQuery);
     // const sections = await updateSections(
@@ -424,22 +433,22 @@ exports.findCoursesByCode = async (req, res) => {
     }
     const result = await courseModel
       .find({ is_deleted: false, codes: { $in: req.params.code } })
-      .sort({ created_date: -1 })
-      .populate({
-        path: "sections",
-        model: "Sections",
-        match: { is_deleted: false },
-        populate: {
-          path: "chapters",
-          model: "Chapters",
-          match: { is_deleted: false },
-          populate: {
-            path: "topics",
-            model: "Topics",
-            match: { is_deleted: false },
-          },
-        },
-      });
+      .sort({ created_date: -1 });
+      // .populate({
+      //   path: "sections",
+      //   model: "Sections",
+      //   match: { is_deleted: false },
+      //   populate: {
+      //     path: "chapters",
+      //     model: "Chapters",
+      //     match: { is_deleted: false },
+      //     populate: {
+      //       path: "topics",
+      //       model: "Topics",
+      //       match: { is_deleted: false },
+      //     },
+      //   },
+      // });
     res.send(result);
   } catch (error) {
     console.log("error:", error);

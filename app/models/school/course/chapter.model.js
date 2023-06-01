@@ -5,6 +5,9 @@ const chapterSchema = new schema({
   chapter_name: {
     type: String,
   },
+  course_content: {
+    type: String,
+  },
   created_date: {
     type: Date,
   },
@@ -18,13 +21,14 @@ const chapterSchema = new schema({
   is_active: {
     type: Boolean,
     default: false,
-  },
-  topics: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Topics",
-    },
-  ],
+  }
+  // ,
+  // topics: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Topics",
+  //   },
+  // ],
 });
 
 module.exports = mongoose.model("Chapters", chapterSchema, "Chapters");
