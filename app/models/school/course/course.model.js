@@ -6,11 +6,25 @@ const coureSchema = new schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },
-  sections: [
+  // chapters: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Chapters",
+  //   },
+  // ],
+  chapters: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Sections",
-    },
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: function () { return new mongoose.Types.ObjectId }
+      },
+      chapterName: {
+        type: String
+      },
+      courseContent: {
+        type: String
+      }
+    }
   ],
   name: {
     type: String,
@@ -21,17 +35,14 @@ const coureSchema = new schema({
   subject: {
     type: String,
   },
-//   school: {
-//     type: String
-// },
-school:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "schools",
-    },
-    curriculum: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Curriculums",
-    }],
+  school: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "schools",
+  },
+  curriculum: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Curriculums",
+  }],
   availability_from: {
     type: Date,
   },
@@ -56,7 +67,7 @@ school:{
     default: false,
   },
   codes: [
-     {type : String}
+    { type: String }
   ],
   courseAccess: [//will insert self id along with shared teacher id 
     {
