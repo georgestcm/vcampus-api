@@ -114,4 +114,30 @@ exports.updateUserProfile =  (req, res) => {
       res.send(error);
     }
     };
+
+    exports.resetPasswordByAdmin =  (req, res) => {
+
+      let userData = req.body;
+
+      User.find({
+        username: userData.username
+      },function(err,user){
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+        
+          bcrypt.hash(userData.newPassword, salt, function(err, hash) {
+            
+            User.updateOne({_id: user._id}, { $set:{password : hash}},function(err,docs){
+                if(err){
+                  res.status(401).send({success : false , msg : "Couldn't update your password right now, please try again later"});
+                }else{
+                  res.status(200).send({success : true, msg :'Password Reset successfully'})
+                }
+            });
+             
+          })
+        })
+      });
+
+      
+    }
     
